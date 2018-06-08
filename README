@@ -1,0 +1,114 @@
+moti.holzman
+oriye
+
+
+
+=============================
+=      File description     =
+=============================
+ex4jar contains files that implement an AVL tree.
+
+Node.java - a class implementing a node in a tree. Every node has two "child" nodes - the left son and the
+right son. Also, every node has three main attributes: "value", height" and "balanceFactor"; "value" is the
+value that the node is representing, height is defined as the number of nodes between the root and its
+furthest leaf, and the balanceFactor is defined as the left son's height minus the right son's height.
+All the above can be reached and changed by getters and setters implemented in the class.
+
+TreeIteratorWrapper.java - a class implementing iterator. The class will be the returned Iterator object of
+the AVL tree class.
+
+AvlTree.java - a class implementing the AVL tree. The class will hold the root node of the tree and will
+support all avl tree actions, including: add, remove ,contains, size etc. Note that the AVL class will
+support the runtime complexity of an avl tree - i.e. add, delete and contain will take O(log(n)) where n in
+the size of the tree.
+
+
+=============================
+=          Design           =
+=============================
+The design of the classes is as follows:
+The AvlTree class HAS a Node and implements Iterable.
+In this design, all nodes hold their height and balance factor as expected in an AVL tree; This way, the
+AvlTree class has to only hold one node - being the root of the tree.
+
+
+=============================
+=  Implementation details   =
+=============================
+AvlTree - the main implementation topics of this class are the add and remove functions.
+
+add function: the add function checks if the tree already contains the inputted value - if it doesn't we call
+the addAndFix helper function that we deal with adding and re-balancing the tree.
+the main flow of the add function works with a recursive binary search in the tree to find the
+correct spot to add the received value (assuming it isn't already there). When finding the correct spot, we
+create and add a node in that place, holding the value. After adding the node all we have to do is to update
+the heights of the nodes and re-balance the tree when needed. For that purpose, we use helper functions when
+backtracking the recursion; we use the following helper functions:
+updateHeightAndBalanceFactor(Node root) - this function will receive a node and update it's height and
+balanceFactor.
+checkAndRotate(Node root) - this function receives a node and checks weather or not it "breaks" the AVL tree
+conditions. If it does - the function uses four more helper functions created to handel the rotations - using
+the conditions discussed in DAST.
+After finishing the recursion, all relevant nodes will be updated and re-balanced and the main add function
+will return true.
+
+delete function: the delete function first check weather or not the value received is already in the tree. If
+it isn't we return false and it it it we call the deleteAndFix helper function. Like the add helper function,
+this function will use a binary search recursion to find the node that hold the value we want to delete. Upon
+finding the node, there are three cases:
+case 1 - the node has no children: in this case, we set his father's son node to point to null.
+case 2 - the node has 1 child, either left or right: we replace the node's value with his son's and delete
+the son.
+case 3 - the node has more than 2 children (he is the root of a tree with a size > 3), we update the node's
+value with his successor (the smallest value that is bigger than his value), and call the deleteAndFix
+function again, deleting the successor. After deleting the successor, just like the add function, we
+backtrack from the successor node back up the recursion while updating heights and balance factors of all
+nodes on the
+way - using the same helper functions used in the add method.
+
+in conclusion, the helper function used by both add and delete methods are:
+updateHeightAndBalanceFactor
+checkAndRotate
+and the functions not used by both are addAndFix and deleteAndFix.
+
+==============================
+=    Theoretical questions   =
+==============================
+
+1.Find a series of 12 numbers, such that when they are inserted into an empty AVL tree
+one-by-one, the result will be a tree of height 4 (insertions only, no deletions) :
+the series is: {30,10,40,22,50,8,32,35,21,5,9,1}.
+
+2.What is the asymptotic running time complexity of the tree construction done in AvlTree(int[] data)?
+the running time is O(nlog(n)). explanation: each insertion cost us log(n) operations. in total we must
+insert n elements, so put this all together is nlog(n).
+
+Bonus: What is the best possible running time complexity for a specific case?
+the best running time is also O(nlog(n)), because if we will assume towards contradiction that we can do this
+in a better time complexity, we then could extract all the elements in ascending order (for example by our
+iterator function) to an array, and we will get a sorted array with less operations then O(nlog(n)).
+
+3. What is the asymptotic running time complexity of the tree construction done in AvlTree(AvlTree avlTree)?
+in our implementation we have done this in O(nlog(n)) - we first make an iterator from the given tree, and
+then insert its elements one by one.
+
+4. What is the best possible running time complexity for a specific case? (this is not a bonus question!)
+the best running time can reached by extracting all the elements from the tree to a sorted array ( O(n) by
+using our getIterator function) and then adding all the elements from the array and create a full binary tree
+by always inserting the median value in the array. the median is always located in the length/2 index and we
+can add the median value to tree in O(1) operations because we know exactly where to put it.
+we have learned this algorithm in DAST, and prove its complexity given in O(n). put this all together and we
+get total operations of O(n).
+
+
+5. What is the asymptotic running time complexity of your implementation of the operation
+done in findMinNodes(int h)?
+in our implementation, the asymptotic running time is bounded by the height of the tree, h. in our algorithm,
+we preforms O(h) additions.
+
+
+6. Is that the best possible asymptotic running time complexity? If not, what is the best achievable
+complexity? we saw a way using the golden ratio that can achieve the answer using almost constant time, by
+using a given formula. we also note that they use the power operation, but we will assume here that we can
+calculate this operation in at most O(log(h)) , where our implementation uses O(h) operations.
+
