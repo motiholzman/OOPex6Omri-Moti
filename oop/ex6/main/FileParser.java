@@ -27,9 +27,11 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_SCOPE = "";//TODO
+    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\((.*)\\)\\s*\\{";
 
+    private final Pattern ScopePattern = Pattern.compile(MATCH_SCOPE);
 
+    private Matcher scopeMatcher ;
 
     private Matcher variableMatcher ;
 
@@ -114,8 +116,10 @@ public class FileParser {
                     variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
                 }
             }
-            if(){
+            scopeMatcher = ScopePattern.matcher(line);
+            if(scopeMatcher.matches()){
                // this is passable new scope and we need to addvance the line to the end of the scope
+                
             }
 
 
