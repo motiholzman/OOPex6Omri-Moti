@@ -103,7 +103,7 @@ public class FileParser {
      */
     public Scope preProssessFile() throws IllegalCodeException, IOException{
         String line = inputBuffer.readLine();
-        Scope mainScope = new Scope(null,null,"main");
+        Scope mainScope = new Scope(null,"main");
         Variable variable;
         while (line != null) {
             // finding global variables
@@ -142,7 +142,7 @@ public class FileParser {
                     index++;
                 }
                 scope.getParameters(parametersType);
-                // now we need to move to the end of the method by stack 
+                // now we need to move to the end of the method by stack
 
 
             }
