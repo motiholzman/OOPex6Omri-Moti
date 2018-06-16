@@ -31,8 +31,8 @@ public class RegexMatcher {
     }
 
     public MatcherWrapper findMatch(String toMatch) {
-        for (String string: patterns) {
-            pattern = Pattern.compile(string);
+        for (String regex: patterns) {
+            pattern = Pattern.compile(regex);
             matcher = pattern.matcher(toMatch);
             if(matcher.matches()){
                 break;

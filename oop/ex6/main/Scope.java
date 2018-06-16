@@ -3,6 +3,7 @@ package oop.ex6.main;
 import oop.ex6.main.variables.Variable;
 
 import java.util.HashSet;
+import java.util.regex.Matcher;
 
 /**
  * this class implements a Scope object
@@ -45,6 +46,12 @@ public class Scope {
             currentScope = this.OuterScope;
         }
         return null;
+    }
+
+
+    public void addVariable(Variable variable)  {
+        // we add variable only if it have correct values and valid name
+        variablesHashSet.add(variable);
     }
 
 }

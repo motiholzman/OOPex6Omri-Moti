@@ -22,6 +22,9 @@ public abstract class Variable {
     /** indicates whether the variable is consider final.*/
     private Boolean isFinal;
 
+    private final String MATCH_NAME = "([a-zA-Z]|__)+(\\b)*";
+
+
     /**
      * this constructor initialize the Variable.
      * @param name : the name of the variable.
@@ -29,8 +32,10 @@ public abstract class Variable {
      * @param isFinal: indicates whether the variable is consider final
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public Variable(String name, String value, Boolean isFinal) throws IllegalCodeException {
+    public Variable(String name, String value, Boolean isFinal, Boolean isInitialize)
+            throws IllegalCodeException {
         this.isFinal = isFinal;
+        this.isInitialize = isInitialize;
         try{
             checkName(name);
             checkVariable(value);
@@ -61,8 +66,12 @@ public abstract class Variable {
     this private method checks whether the name of the variable is correct.
      */
     private void checkName(String name) throws BadVariableException {
-        //FIXME check the variable name here.
-        this.name = name;
+        if(name.trim().matches(MATCH_NAME)) {
+            this.name = name;
+        }
+        else {
+            throw new BadVariableException ();
+        }
     }
 
     /**
@@ -72,8 +81,5 @@ public abstract class Variable {
         return name;
     }
 
-    // fixme  this method parse a matcher after we found that it is a variable using groups...tirgul 11
-    public void addVariable(Matcher matcher)  {
 
-    }
 }

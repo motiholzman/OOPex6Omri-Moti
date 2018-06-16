@@ -9,6 +9,8 @@ import oop.ex6.main.IllegalCodeException;
  */
 public class CharVariable extends Variable {
 
+    private static final String MATCH_CHAR = "\'.\'";
+
     /**
      * this constructor initialize the char Variable.
      * @param name : the name of the variable.
@@ -16,15 +18,16 @@ public class CharVariable extends Variable {
      * @param isFinal: indicates whether the variable is consider final
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public CharVariable(String name, String value, Boolean isFinal) throws IllegalCodeException {
-        super(name,value,isFinal);
+    public CharVariable(String name, String value, Boolean isFinal, Boolean isInitialize)
+            throws IllegalCodeException {
+        super(name,value,isFinal, isInitialize);
         type = "Char";
     }
 
     @Override
     /** {@inheritDoc} */
     public void checkVariable(String value) throws BadVariableException {
-        if (value.length() == 1) { //FIXME isn't enough - we have to check for a regex '.'
+        if(value.trim().matches(MATCH_CHAR)){
             return;
         }
         else {

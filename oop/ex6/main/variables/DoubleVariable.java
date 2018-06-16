@@ -9,6 +9,9 @@ import oop.ex6.main.IllegalCodeException;
  */
 public class DoubleVariable extends Variable {
 
+
+    private static final String MATCH_DOUBLE = "-?(\\d)+[.](\\d*)";
+
     /**
      * this constructor initialize the Double Variable.
      * @param name : the name of the variable.
@@ -16,8 +19,9 @@ public class DoubleVariable extends Variable {
      * @param isFinal: indicates whether the variable is consider final
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public DoubleVariable(String name, String value, Boolean isFinal) throws IllegalCodeException{
-        super(name, value, isFinal);
+    public DoubleVariable(String name, String value, Boolean isFinal, Boolean isInitialize)
+            throws IllegalCodeException{
+        super(name, value, isFinal,isInitialize);
         this.type = "double";
     }
 
@@ -26,10 +30,10 @@ public class DoubleVariable extends Variable {
      * {@inheritDoc}
      */
     public void checkVariable(String value) throws BadVariableException {
-        try{
-            Double.parseDouble(value);
+        if(value.trim().matches(MATCH_DOUBLE)){
+            return;
         }
-        catch (NumberFormatException e){
+        else {
             throw new BadVariableException();
         }
     }

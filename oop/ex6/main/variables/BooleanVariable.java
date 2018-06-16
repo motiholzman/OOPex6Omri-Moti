@@ -9,6 +9,9 @@ import oop.ex6.main.IllegalCodeException;
  */
 public class BooleanVariable extends  Variable {
 
+    private static final String MATCH_DOUBLE = "-?(\\d)+[.](\\d*)";
+    private static final String MATCH_BOOLEAN = "true|false|"+ MATCH_DOUBLE;
+
     /**
      * this constructor initialize the Boolean variable.
      * @param name : the name of the variable.
@@ -16,8 +19,9 @@ public class BooleanVariable extends  Variable {
      * @param isFinal: indicates whether the variable is consider final
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public BooleanVariable(String name, String value, Boolean isFinal) throws IllegalCodeException{
-        super(name, value, isFinal);
+    public BooleanVariable(String name, String value, Boolean isFinal, Boolean isInitialize)
+            throws IllegalCodeException{
+        super(name, value, isFinal, isInitialize);
         type = "Boolean";
     }
 
@@ -28,13 +32,10 @@ public class BooleanVariable extends  Variable {
      * number otherwise throws an exception.
      */
     public void checkVariable(String value) throws BadVariableException {
-        try{
-            if (value.equals("true") || value.equals("false")){
-                return;
-            }
-            Double.parseDouble(value);
+        if(value.trim().matches(MATCH_BOOLEAN)){
+            return;
         }
-        catch (NumberFormatException e){
+        else {
             throw new BadVariableException();
         }
     }
