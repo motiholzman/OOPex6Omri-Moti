@@ -27,7 +27,15 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\((.*)\\)\\s*\\{";
+    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s*(([a-zA-Z]|__)+\\s)|" +
+            "(([a-zA-Z]|__)+\\s,\\s))";
+
+    private final String MATCH_TYPE_PARAMETER2 =  "(int|double|char|String|boolean)\\s*([a-zA-Z]|__)+\\s*,?";
+
+    private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
+
+    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\(" +
+            "("+MATCH_TYPE_PARAMETER+")\\)\\s*\\{";
 
     private final Pattern ScopePattern = Pattern.compile(MATCH_SCOPE);
 
@@ -95,7 +103,7 @@ public class FileParser {
      */
     public Scope preProssessFile() throws IllegalCodeException, IOException{
         String line = inputBuffer.readLine();
-        Scope mainScope = new Scope(null);
+        Scope mainScope = new Scope(null,null,"main");
         Variable variable;
         while (line != null) {
             // finding global variables
@@ -119,7 +127,24 @@ public class FileParser {
             scopeMatcher = ScopePattern.matcher(line);
             if(scopeMatcher.matches()){
                // this is passable new scope and we need to addvance the line to the end of the scope
-                
+                String scopeName = scopeMatcher.group(1);
+                Scope scope = new Scope(mainScope,scopeName);
+                String [] parametersList = scopeMatcher.group(2).split(",");
+                String [] parametersType = new String[parametersList.length];
+                int index = 0;
+                for(String typeValueString: parametersList){
+                    Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
+                    String type = typeParamMatcher.group(1);
+                    String variableName = typeParamMatcher.group(2);
+                    variableFromLine
+                            (type,null,variableName,null,scope,null);
+                    parametersType[index] = type;
+                    index++;
+                }
+                scope.getParameters(parametersType);
+                // now we need to move to the end of the method by stack 
+
+
             }
 
 

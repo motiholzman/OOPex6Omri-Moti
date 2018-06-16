@@ -16,14 +16,22 @@ public class Scope {
     /* the Scope's variables. this set include only the Scope's local variables */
     private HashSet <Variable> variablesHashSet;
 
-    private HashSet <Scope> Scopes = new HashSet<>(); // FIXME not necessary. maybe can be located at the parser.
+    private String [] parametersType;
+
+    private String name;
+
+    public static HashSet <Scope> Scopes = new HashSet<>(); // FIXME not necessary. maybe can be located
+    // at the
+    // parser.
 
     /**
      * this constructor initialize the object.
      * @param fatherScope : the outer scope of the constructed scope.
      */
-    public Scope (Scope fatherScope) {
+    public Scope (Scope fatherScope,String name) {
         this.OuterScope = fatherScope;
+        this.parametersType = null;
+        this.name = name;
         variablesHashSet = new HashSet<>();
     }
 
@@ -48,6 +56,10 @@ public class Scope {
         return null;
     }
 
+
+    public void getParameters(String [] parametersType){
+        this.parametersType = parametersType;
+    }
 
     public void addVariable(Variable variable)  {
         // we add variable only if it have correct values and valid name

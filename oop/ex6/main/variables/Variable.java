@@ -22,7 +22,11 @@ public abstract class Variable {
     /** indicates whether the variable is consider final.*/
     private Boolean isFinal;
 
-    private final String MATCH_NAME = "([a-zA-Z]|__)+(\\b)*";
+    private final String MATCH_NAME = "([a-zA-Z]|__)+\\b";
+
+    public Boolean variableTypeMatch(String type){
+        return this.type.equals(type);
+    }
 
 
     /**
