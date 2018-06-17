@@ -51,6 +51,21 @@ public class FileParser {
 
     private String filePath;
 
+    private final String MATCH_EMPTY_LINE = "\\s*";
+
+    private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
+
+    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*(final)?\\s*\\w*(," +
+            "\\s*(final)?\\w+)*)\\)\\s*;";
+
+    private final Pattern funcCallPattern = Pattern.compile(MATCH_FUNC_CALL);
+
+    private final String MATCH_IF_WHILE_CALL = "(if|while)\\s*\\((\\w*(\\s*(&&|\\|\\|)\\s*\\w*)*)\\)\\s*\\{";
+
+    private final Pattern ifWhilePattern = Pattern.compile(MATCH_IF_WHILE_CALL);
+
+
+
     /**
      * this constructor initialize the objects
      * @param filePath : a path to the given code file to process.
@@ -191,7 +206,7 @@ public class FileParser {
         Scope mainScope = preProssessFile();
         Reader inputFile = new FileReader(filePath);
         inputBuffer = new BufferedReader(inputFile);
-        
+
 
     }
 
