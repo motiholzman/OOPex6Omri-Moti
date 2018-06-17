@@ -20,7 +20,7 @@ public class Scope {
 
     private String name;
 
-    public static HashSet <Scope> Scopes = new HashSet<>(); // FIXME not necessary. maybe can be located
+
     // at the
     // parser.
 
