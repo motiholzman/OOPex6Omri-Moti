@@ -3,6 +3,7 @@ package oop.ex6.main;
 import oop.ex6.main.variables.*;
 
 import java.io.*;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -102,10 +103,12 @@ public class FileParser {
      *
      */
     public Scope preProssessFile() throws IllegalCodeException, IOException{
+        Stack<String> bracket = new Stack<>();
         String line = inputBuffer.readLine();
         Scope mainScope = new Scope(null,"main");
         Variable variable;
         while (line != null) {
+            //
             // finding global variables
             String [] variableList = line.split(",");
             variableMatcher = VariablePattern.matcher(variableList[0].trim());
@@ -143,6 +146,7 @@ public class FileParser {
                 }
                 scope.getParameters(parametersType);
                 // now we need to move to the end of the method by stack
+
 
 
             }
