@@ -197,9 +197,9 @@ public class FileParser {
         Scope mainScope = preProcessFile();
         Reader inputFile = new FileReader(filePath);
         inputBuffer = new BufferedReader(inputFile);
-
-
-
+        
     }
+
+
     
 }
