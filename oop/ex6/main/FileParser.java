@@ -179,22 +179,31 @@ public class FileParser {
         }
     }
 
-    private void createGlobalVariable(Scope mainScope, String[] variableList) throws IllegalCodeException {
+    private void createGlobalVariable(Scope scope, String[] variableList) throws IllegalCodeException {
         String type = variableMatcher.group(2);
         Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
         String variableName = variableMatcher.group(3);
         String variableValue = variableMatcher.group(5);
         Boolean variableInitiated = variableList[0].contains(EQUAL);
-        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
+        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, scope,
                 variableInitiated);
         for(int index = 1; index<variableList.length;index++){
             variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
             variableName = variableMatcher.group(3);
             variableValue = variableMatcher.group(5);
             variableInitiated = variableList[index].contains(EQUAL);
-            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
+            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, scope,
                     variableInitiated);
         }
+    }
+
+    private Scope bringScope(String scopeName) throws IllegalCodeException {
+        for(Scope currentScope: Scopes){
+            if(currentScope.getName().equals(scopeName)){
+                return currentScope;
+            }
+        }
+        throw new IllegalCodeException();
     }
 
     public void fileProcess()throws IllegalCodeException, IOException{
@@ -204,6 +213,23 @@ public class FileParser {
         String line;
         line = inputBuffer.readLine();
         while (line != null){
+            genericMatcher = emptyLinePattern.matcher(line.trim());
+            if(genericMatcher.matches()){}
+            genericMatcher = VariablePattern.matcher(line.trim());
+            if(genericMatcher.matches()){
+                if(!currentScope.getName().equals("main")){
+                    // if the current scope isnt main we need to know those variables
+                    String [] variableList = line.split(",");
+                    createGlobalVariable(currentScope,variableList);
+                }
+            }
+            genericMatcher = ScopePattern.matcher(line.trim());
+            if(genericMatcher.matches()){
+                String scopeName = scopeMatcher.group(1);
+
+
+            }
+
 
 
             line = inputBuffer.readLine();
