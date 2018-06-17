@@ -59,8 +59,8 @@ public class FileParser {
 
     private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
 
-    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*[^>]*)?(\\s*,\\s*([^>]*)*)" +
-            "\\)\\s*;";
+    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\(((\\s*[^>]*)?(\\s*,\\s*([^>]*)*)" +
+            "\\))\\s*;";
 
     private final Pattern funcCallPattern = Pattern.compile(MATCH_FUNC_CALL);
 
