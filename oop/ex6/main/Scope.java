@@ -72,4 +72,11 @@ public class Scope {
     public String getName() {
         return name;
     }
+
+    /**
+     * @return : the outer scope.
+     */
+    public Scope getOuterScope() {
+        return OuterScope;
+    }
 }
