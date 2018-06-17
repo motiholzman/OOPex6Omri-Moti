@@ -245,7 +245,15 @@ public class FileParser {
                 }
                 line = inputBuffer.readLine();
             }
-
+            genericMatcher = ifWhilePattern.matcher(line.trim());
+            if(genericMatcher.matches()){
+                String scopeType = genericMatcher.group(1);
+                String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
+                currentScope = new IfWhile(currentScope,scopeType);
+                for(String param:parameters){
+                    currentScope.checkSignature(param);
+                }
+            }
 
         }
 

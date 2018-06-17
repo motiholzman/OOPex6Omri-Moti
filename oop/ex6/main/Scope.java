@@ -30,10 +30,13 @@ public class Scope {
         variablesArray = new ArrayList<>();
     }
 
-//    /**
-//     * this method checks if the scope's signature is correct.
-//     */
-//    public void checkSignature() throws BadScopeSignatureException;
+    /**
+     * this method checks if the scope's signature is correspond to the arguments that appears in the
+     * calling to the function.
+     */
+    public void checkSignature(String parmList) throws BadScopeSignatureException, IllegalCodeException {
+
+    }
 
     /**
      * @param variableName : a string represents a name of a variable.
