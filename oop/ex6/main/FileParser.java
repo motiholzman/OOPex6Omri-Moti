@@ -194,12 +194,18 @@ public class FileParser {
     }
 
     public void fileProcess()throws IllegalCodeException, IOException{
-        Scope mainScope = preProcessFile();
+        Scope currentScope = preProcessFile();
         Reader inputFile = new FileReader(filePath);
         inputBuffer = new BufferedReader(inputFile);
-        
+        String line;
+        line = inputBuffer.readLine();
+        while (line != null){
+
+
+            line = inputBuffer.readLine();
+        }
+
+
     }
 
-
-    
 }
