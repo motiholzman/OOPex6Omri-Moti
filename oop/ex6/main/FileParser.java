@@ -53,7 +53,9 @@ public class FileParser {
 
     private final String MATCH_EMPTY_LINE = "\\s*";
 
-    private final String COMMENT_PATTERN = "(^\\/\\/).*";
+    private final String MATCH_COMMENT = "(^\\/\\/).*";
+
+    private final Pattern commentPattern = Pattern.compile(MATCH_COMMENT);
 
     private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
 
@@ -191,10 +193,11 @@ public class FileParser {
         }
     }
 
-    public void fileProsses()throws IllegalCodeException, IOException{
+    public void fileProcess()throws IllegalCodeException, IOException{
         Scope mainScope = preProcessFile();
         Reader inputFile = new FileReader(filePath);
         inputBuffer = new BufferedReader(inputFile);
+
 
 
     }
