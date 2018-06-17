@@ -111,71 +111,76 @@ public class FileParser {
         Stack<String> bracket = new Stack<>();
         String line = inputBuffer.readLine();
         Scope mainScope = new Scope(null,"main");
-        Variable variable;
         String [] variableList;
         while (line != null) {
             // finding global variables
             variableList = line.split(",");
             variableMatcher = VariablePattern.matcher(variableList[0].trim());
             if (variableMatcher.matches()) {
-                String type = variableMatcher.group(2);
-                Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
-                String variableName = variableMatcher.group(3);
-                String variableValue = variableMatcher.group(5);
-                Boolean variableInitiated = variableList[0].contains(EQUAL);
-                variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
-                for(int index = 1; index<variableList.length;index++){
-                    variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
-                    variableName = variableMatcher.group(3);
-                    variableValue = variableMatcher.group(5);
-                    variableInitiated = variableList[index].contains(EQUAL);
-                    variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
-                }
+                createGlobalVariable(mainScope, variableList);
             }
             scopeMatcher = ScopePattern.matcher(line);
             if(scopeMatcher.matches()){
-                bracket.push("{");//add bracket to the stack because we opened new scope
-               // this is passable new scope and we need to advance the line to the end of the scope
-                String scopeName = scopeMatcher.group(1);
-                Scope scope = new Scope(mainScope,scopeName);
-                String [] parametersList = scopeMatcher.group(2).split(",");
-                String [] parametersType = new String[parametersList.length];
-                int index = 0;
-                for(String typeValueString: parametersList){
-                    Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
-                    String type = typeParamMatcher.group(1);
-                    String variableName = typeParamMatcher.group(2);
-                    variableFromLine
-                            (type,null,variableName,null,scope,null);
-                    parametersType[index] = type;
-                    index++;
-                }
-                scope.setParameters(parametersType);
-                Scopes.add(scope);
-                // now we need to move to the end of the method by stack
-                //checking that every bracket that opens is also closing
-                line = inputBuffer.readLine();
-                while(!bracket.empty() && line != null) {
-                    if (line.trim().matches(MATCH_BRACKET)) {
-                        bracket.push("{");
-                    } else if (line.trim().equals("}")) {
-                        try {
-                            bracket.pop();
-                        } catch (NullPointerException e) {
-                            throw new IllegalCodeException();
-                        }
-                    }
-                    line = inputBuffer.readLine();
-                }
-                if(!bracket.empty()){
-                    throw new IllegalCodeException();
-                }
-
-
-
+                handleNewScope(bracket, mainScope);
             }
             line = inputBuffer.readLine();
         }
         return mainScope;
+    }
+
+    private void handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException, IOException {
+        String line;
+        bracket.push("{");//add bracket to the stack because we opened new scope
+        // this is passable new scope and we need to advance the line to the end of the scope
+        String scopeName = scopeMatcher.group(1);
+        Scope scope = new Scope(mainScope,scopeName);
+        String [] parametersList = scopeMatcher.group(2).split(",");
+        String [] parametersType = new String[parametersList.length];
+        int index = 0;
+        for(String typeValueString: parametersList){
+            Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
+            String type = typeParamMatcher.group(1);
+            String variableName = typeParamMatcher.group(2);
+            variableFromLine
+                    (type,null,variableName,null,scope,null);
+            parametersType[index] = type;
+            index++;
+        }
+        scope.setParameters(parametersType);
+        Scopes.add(scope);
+        // now we need to move to the end of the method by stack
+        //checking that every bracket that opens is also closing
+        line = inputBuffer.readLine();
+        while(!bracket.empty() && line != null) {
+            if (line.trim().matches(MATCH_BRACKET)) {
+                bracket.push("{");
+            } else if (line.trim().equals("}")) {
+                try {
+                    bracket.pop();
+                } catch (NullPointerException e) {
+                    throw new IllegalCodeException();
+                }
+            }
+            line = inputBuffer.readLine();
+        }
+        if(!bracket.empty()){
+            throw new IllegalCodeException();
+        }
+    }
+
+    private void createGlobalVariable(Scope mainScope, String[] variableList) throws IllegalCodeException {
+        String type = variableMatcher.group(2);
+        Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
+        String variableName = variableMatcher.group(3);
+        String variableValue = variableMatcher.group(5);
+        Boolean variableInitiated = variableList[0].contains(EQUAL);
+        variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
+        for(int index = 1; index<variableList.length;index++){
+            variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
+            variableName = variableMatcher.group(3);
+            variableValue = variableMatcher.group(5);
+            variableInitiated = variableList[index].contains(EQUAL);
+            variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
+        }
     }
 }
