@@ -89,7 +89,13 @@ public abstract class Variable {
     }
 
 
-    /* this private method checks whether the name of the variable is correct. */
+
+
+    /**
+     * this private method checks whether the name of the variable is legal.
+     * @param name - a name of a variable
+     * @throws BadVariableException - if the name of the variable isnt legal
+     */
     private void checkName(String name) throws BadVariableException {
         if(name.trim().matches(MATCH_NAME)) {
             this.name = name;
@@ -106,10 +112,16 @@ public abstract class Variable {
         return name;
     }
 
+    /**
+     * @return boolean that say if the file is final
+     */
     public Boolean getFinal() {
         return isFinal;
     }
 
+    /**
+     * @return boolean that say if the file is initialize
+     */
     public Boolean getInitialize() {
         return isInitialize;
     }
