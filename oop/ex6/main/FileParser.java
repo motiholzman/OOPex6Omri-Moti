@@ -18,7 +18,7 @@ public class FileParser {
     , CHAR="char", COMMA=",", EQUAL="=", SPACE = "\\s+", RETURN = "return;";
 
 
-    private final String MATCH_VARIABLE = "(final?)(int|double|char|String|boolean)\\s*(\\w)\\s*(=\\s*" +
+    private final String MATCH_VARIABLE = "(final?)\\s*(int|double|char|String|boolean)\\s*(\\w)\\s*(=\\s*" +
             "([^>]*))?;";
 
     private final String MATCH_VARIABLE_SECCONDRY = "(\\w)\\s*(=\\s*([^>]*))?";
