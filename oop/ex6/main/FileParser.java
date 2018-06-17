@@ -24,6 +24,8 @@ public class FileParser {
 
     private final String MATCH_VARIABLE_SECCONDRY = "(\\w)\\s*(=\\s*([^>]*))?";
 
+    private final String MATCH_BRACKET = "(if|while|void)\\s*[^\\{\\}]*\\{";
+
     private final Pattern VariablePattern = Pattern.compile(MATCH_VARIABLE);
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
@@ -109,7 +111,6 @@ public class FileParser {
         Variable variable;
         String [] variableList;
         while (line != null) {
-            //
             // finding global variables
             variableList = line.split(",");
             variableMatcher = VariablePattern.matcher(variableList[0].trim());
@@ -130,7 +131,8 @@ public class FileParser {
             }
             scopeMatcher = ScopePattern.matcher(line);
             if(scopeMatcher.matches()){
-               // this is passable new scope and we need to addvance the line to the end of the scope
+                bracket.push("{");//add bracket to the stack because we opened new scope
+               // this is passable new scope and we need to advance the line to the end of the scope
                 String scopeName = scopeMatcher.group(1);
                 Scope scope = new Scope(mainScope,scopeName);
                 String [] parametersList = scopeMatcher.group(2).split(",");
@@ -147,12 +149,24 @@ public class FileParser {
                 }
                 scope.setParameters(parametersType);
                 // now we need to move to the end of the method by stack
+                //checking that every bracket that opens is also closing
+                while(!bracket.empty()) {
+                    if (line.trim().matches(MATCH_BRACKET)) {
+                        bracket.push("{");
+                    } else if (line.trim().equals("}")) {
+                        try {
+                            bracket.pop();
+                        } catch (NullPointerException e) {
+                            throw new IllegalCodeException();
+                        }
+                    }
+                    line = inputBuffer.readLine();
+                }
+
 
 
 
             }
-
-
             line = inputBuffer.readLine();
         }
         return mainScope;
