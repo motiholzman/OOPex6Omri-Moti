@@ -49,6 +49,8 @@ public class FileParser {
 
     private Matcher variableMatcher ;
 
+    private String filePath;
+
     /**
      * this constructor initialize the objects
      * @param filePath : a path to the given code file to process.
@@ -56,6 +58,7 @@ public class FileParser {
      */
     public FileParser(String filePath) throws InOutException {
         try {
+            this.filePath = filePath;
             Reader inputFile = new FileReader(filePath);
             inputBuffer = new BufferedReader(inputFile);
         }
@@ -183,4 +186,13 @@ public class FileParser {
             variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
         }
     }
+
+    public void fileProsses()throws IllegalCodeException, IOException{
+        Scope mainScope = preProssessFile();
+        Reader inputFile = new FileReader(filePath);
+        inputBuffer = new BufferedReader(inputFile);
+        
+
+    }
+
 }
