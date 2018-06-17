@@ -57,7 +57,7 @@ public class Scope {
     }
 
 
-    public void getParameters(String [] parametersType){
+    public void setParameters(String [] parametersType){
         this.parametersType = parametersType;
     }
 

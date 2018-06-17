@@ -10,7 +10,7 @@ import oop.ex6.main.IllegalCodeException;
 public class DoubleVariable extends Variable {
 
 
-    private static final String MATCH_DOUBLE = "-?(\\d)+[.](\\d*)";
+    private static final String MATCH_DOUBLE = "-?(\\d)+([.](\\d*))?";
 
     /**
      * this constructor initialize the Double Variable.
