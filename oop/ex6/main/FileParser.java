@@ -1,5 +1,6 @@
 package oop.ex6.main;
 
+import oop.ex6.main.variables.Variable;
 import oop.ex6.main.variables.VariablesFactory;
 
 import java.io.*;
@@ -18,14 +19,14 @@ public class FileParser {
     /* a private buffer to rad a file with.*/
     private BufferedReader inputBuffer;
 
-    public static final String INT="int",DOUBLE="double", STRING="String",FINAL="final", BOOLEAN="boolean"
-            , CHAR="char", COMMA=",", EQUAL="=", SPACE = "\\s+", RETURN = "return;"; //TODO check for unused.
+    public static final String INT = "int", DOUBLE = "double", STRING = "String", FINAL = "final", BOOLEAN = "boolean", CHAR = "char", COMMA = ",", EQUAL = "=", SPACE = "\\s+", RETURN = "return;"; //TODO check for unused.
 
+    private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
 
     private final String MATCH_VARIABLE = "(final?)\\s*(int|double|char|String|boolean)\\s*(\\w)\\s*(=\\s*" +
             "([^>]*))?;";
 
-    private final String MATCH_VARIABLE_SECCONDRY = "(\\w)\\s*(=\\s*([^>]*))?";
+    private final String MATCH_VARIABLE_SECCONDRY = "(\\w*)\\s*(=\\s*([^>]*))?";
 
     private final String MATCH_BRACKET = "(if|while|void)\\s*[^\\{\\}]*\\{";
 
@@ -33,16 +34,16 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+(([a-zA-Z])+\\s)|" +
-            "(([a-zA-Z]|_)+\\s,\\s*))";
+    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+" +
+            "(" + MATCH_NAME + "\\s*)|" + "(" + MATCH_NAME + "\\s*,\\s*))";
 
-    private final String MATCH_TYPE_PARAMETER2 =  "(final)?(int|double|char|String|boolean)\\s+([a-zA-Z])" +
-            "+\\s*,?";
+    private final String MATCH_TYPE_PARAMETER2 = "(final)?(int|double|char|String|boolean)" +
+            "\\s+" + MATCH_NAME + "\\s*,?";
 
     private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
 
     private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\(" +
-            "("+MATCH_TYPE_PARAMETER+")\\)\\s*\\{";
+            "(" + MATCH_TYPE_PARAMETER + ")\\)\\s*\\{";
 
     private final Pattern ScopePattern = Pattern.compile(MATCH_SCOPE);
 
@@ -73,14 +74,14 @@ public class FileParser {
 
     private final Pattern returnPattern = Pattern.compile(MATCH_RETURN);
 
-    private final String MATCH_ASSIGN = "\\w*\\s*=\\s*\\w*(,\\w*\\s*=\\s*\\w*)*;";
+    private final String MATCH_ASSIGN = MATCH_NAME + "\\s*=\\s*" + MATCH_NAME + "(," +
+            "\\s*" + MATCH_NAME + "\\s*=\\s*" + MATCH_NAME + ")*;";
 
     private final Pattern assignPattern = Pattern.compile(MATCH_ASSIGN);
 
     private final String MATCH_CLOSE_PARENTHESES = "[}]";
 
     private final Pattern closeParenthesesPattern = Pattern.compile(MATCH_CLOSE_PARENTHESES);
-
 
 
     /* the pattern object for comparing regex */
@@ -90,9 +91,9 @@ public class FileParser {
     private Matcher genericMatcher;
 
 
-
     /**
      * this constructor initialize the objects
+     *
      * @param filePath : a path to the given code file to process.
      * @throws InOutException: in case that the file wasn't found.
      */
@@ -101,17 +102,17 @@ public class FileParser {
             this.filePath = filePath;
             Reader inputFile = new FileReader(filePath);
             inputBuffer = new BufferedReader(inputFile);
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new InOutException();
         }
     }
 
     /**
      * this method close the buffer of the parser.
+     *
      * @throws IOException : in case that the buffer can't be close.
      */
-    public void closeParser() throws IOException{
+    public void closeParser() throws IOException {
         inputBuffer.close();
     }
 
@@ -119,11 +120,11 @@ public class FileParser {
     /**
      *
      */
-    public Scope preProcessFile() throws IllegalCodeException, IOException{
+    public Scope preProcessFile() throws IllegalCodeException, IOException {
         Stack<String> bracket = new Stack<>();
         String line = inputBuffer.readLine();
-        Scope mainScope = new Scope(null,"main");
-        String [] variableList;
+        Scope mainScope = new Scope(null, "main");
+        String[] variableList;
         while (line != null) {
             // finding global variables
             variableList = line.split(",");
@@ -132,7 +133,7 @@ public class FileParser {
                 createGlobalVariable(mainScope, variableList);
             }
             scopeMatcher = ScopePattern.matcher(line);
-            if(scopeMatcher.matches()){
+            if (scopeMatcher.matches()) {
                 handleNewScope(bracket, mainScope);
             }
             line = inputBuffer.readLine();
@@ -146,15 +147,15 @@ public class FileParser {
         bracket.push("{");//add bracket to the stack because we opened new scope
         // this is passable new scope and we need to advance the line to the end of the scope
         String scopeName = scopeMatcher.group(1);
-        Scope scope = new Scope(mainScope,scopeName);
-        String [] parametersList = scopeMatcher.group(2).split(",");
+        Scope scope = new Scope(mainScope, scopeName);
+        String[] parametersList = scopeMatcher.group(2).split(",");
         int index = 0;
-        for(String typeValueString: parametersList){
+        for (String typeValueString : parametersList) {
             Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
             Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
             String type = typeParamMatcher.group(2);
             String variableName = typeParamMatcher.group(3);
-            VariablesFactory.createVariable(type,variableFinal, variableName,null, scope,
+            VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
                     null);
             index++;
         }
@@ -162,7 +163,7 @@ public class FileParser {
         // now we need to move to the end of the method by stack
         //checking that every bracket that opens is also closing
         line = inputBuffer.readLine();
-        while(!bracket.empty() && line != null) {
+        while (!bracket.empty() && line != null) {
             if (line.trim().matches(MATCH_BRACKET)) {
                 bracket.push("{");
             } else if (line.trim().equals("}")) {
@@ -174,7 +175,7 @@ public class FileParser {
             }
             line = inputBuffer.readLine();
         }
-        if(!bracket.empty()){
+        if (!bracket.empty()) {
             throw new IllegalCodeException();
         }
     }
@@ -187,7 +188,7 @@ public class FileParser {
         Boolean variableInitiated = variableList[0].contains(EQUAL);
         VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
                 variableInitiated);
-        for(int index = 1; index<variableList.length;index++){
+        for (int index = 1; index < variableList.length; index++) {
             variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
             variableName = variableMatcher.group(3);
             variableValue = variableMatcher.group(5);
@@ -198,22 +199,62 @@ public class FileParser {
     }
 
     private Scope bringScope(String scopeName) throws IllegalCodeException {
-        for(Scope currentScope: Scopes){
-            if(currentScope.getName().equals(scopeName)){
+        for (Scope currentScope : Scopes) {
+            if (currentScope.getName().equals(scopeName)) {
                 return currentScope;
             }
         }
         throw new BadCodeException("Error: method doesn't exist");
     }
 
-    public void fileProcess()throws IllegalCodeException, IOException{
+    public void fileProcess() throws IllegalCodeException, IOException {
         Scope currentScope = preProcessFile();
         Reader inputFile = new FileReader(filePath);
         inputBuffer = new BufferedReader(inputFile);
         String line;
         line = inputBuffer.readLine();
         while (line != null){
-            genericMatcher = commentPattern.matcher(line);
+			 genericMatcher = emptyLinePattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+            }
+            genericMatcher = VariablePattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                if (!currentScope.getName().equals("main")) {
+                    // if the current scope isnt main we need to know those variables
+                    String[] variableList = line.split(",");
+                    createGlobalVariable(currentScope, variableList);
+                }
+            }
+            genericMatcher = ScopePattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                String scopeName = scopeMatcher.group(1);
+                currentScope = bringScope(scopeName);
+            }
+            genericMatcher = assignPattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                String[] variableList = line.split(",");
+                for (String assigment : variableList) {
+                    String[] variables = assigment.split("=");
+                    String variable1 = variables[0];
+                    String value = variables[1];
+                    Variable var = currentScope.getVariable(variable1.trim());
+                    if (var == null || var.getFinal()) {
+                        throw new BadCodeException("Error: cannot assign to this variable variable");
+                    }
+                    var.checkVariable(value.trim());
+                }
+                line = inputBuffer.readLine();
+            }
+            genericMatcher = ifWhilePattern.matcher(line.trim());
+            if(genericMatcher.matches()){
+                String scopeType = genericMatcher.group(1);
+                String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
+                currentScope = new IfWhile(currentScope,scopeType);
+                for(String param:parameters){
+                    currentScope.checkSignature(param);
+                }
+            }
+			 genericMatcher = commentPattern.matcher(line);
             if (genericMatcher.matches()) {
             }
             genericMatcher = returnPattern.matcher(line.trim());
@@ -243,10 +284,10 @@ public class FileParser {
             else {
                 throw new BadCodeException("Error: Unsupported line of code.");
             }
-            line = inputBuffer.readLine();
+			line = inputBuffer.readLine();
+            
         }
     }
-
     /**
      * this method checks if some operations occurred in the main Scope. in that case, throws an exception.
      * @param currentScope: the current scope of the program.
@@ -257,5 +298,4 @@ public class FileParser {
             throw new BadCodeException("Error: there is a return statement in the main scope.");
         }
     }
-
 }

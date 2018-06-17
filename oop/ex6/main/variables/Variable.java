@@ -24,7 +24,7 @@ public abstract class Variable {
     private Boolean isFinal;
 
     /* a regex that checks that the variable's name is in the correct pattern. */
-    private final String MATCH_NAME = "([a-zA-Z]|_)+\\w";
+    private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
 
     /* the Variable's scopes which it belong to. */
     private Scope variableScope;
@@ -111,5 +111,11 @@ public abstract class Variable {
         return name;
     }
 
+    public Boolean getFinal() {
+        return isFinal;
+    }
 
+    public Boolean getInitialize() {
+        return isInitialize;
+    }
 }
