@@ -9,7 +9,7 @@ import oop.ex6.main.IllegalCodeException;
  */
 public class IntVariable extends Variable {
 
-    private static final String MATCH_INT = "-*\\d+";
+    private static final String MATCH_INT = "-?\\d+";
 
     /**
      * this constructor initialize the string Variable.

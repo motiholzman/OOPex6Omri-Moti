@@ -42,7 +42,9 @@ public abstract class Variable {
         this.isInitialize = isInitialize;
         try{
             checkName(name);
-            checkVariable(value);
+            if(isInitialize) {
+                checkVariable(value); 
+            }
         }
         catch (BadVariableException e) {
             throw new IllegalCodeException();

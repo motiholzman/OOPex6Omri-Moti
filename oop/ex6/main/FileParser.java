@@ -27,10 +27,10 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s*(([a-zA-Z]|__)+\\s)|" +
-            "(([a-zA-Z]|__)+\\s,\\s))";
+    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+(([a-zA-Z])+\\s)|" +
+            "(([a-zA-Z]|_)+\\s,\\s*))";
 
-    private final String MATCH_TYPE_PARAMETER2 =  "(int|double|char|String|boolean)\\s*([a-zA-Z]|__)+\\s*,?";
+    private final String MATCH_TYPE_PARAMETER2 =  "(int|double|char|String|boolean)\\s+([a-zA-Z])+\\s*,?";
 
     private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
 
@@ -105,9 +105,10 @@ public class FileParser {
         String line = inputBuffer.readLine();
         Scope mainScope = new Scope(null,"main");
         Variable variable;
+        String [] variableList;
         while (line != null) {
             // finding global variables
-            String [] variableList = line.split(",");
+            variableList = line.split(",");
             variableMatcher = VariablePattern.matcher(variableList[0].trim());
             if (variableMatcher.matches()) {
                 String type = variableMatcher.group(2);
@@ -141,7 +142,7 @@ public class FileParser {
                     parametersType[index] = type;
                     index++;
                 }
-                scope.getParameters(parametersType);
+                scope.setParameters(parametersType);
                 // now we need to move to the end of the method by stack
 
 
