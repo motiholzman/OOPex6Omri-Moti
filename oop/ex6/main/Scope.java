@@ -4,6 +4,7 @@ import oop.ex6.main.variables.Variable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * this class implements a Scope object
@@ -33,9 +34,22 @@ public class Scope {
     /**
      * this method checks if the scope's signature is correspond to the arguments that appears in the
      * calling to the function.
-     */
-    public void checkSignature(String parmList) throws BadScopeSignatureException {
-
+     * @param listOfArguments : the arguments that was gave to the function when it was called.
+     * @throws IllegalCodeException: in case the arguments doesn't correspond to the function signature.
+     * */
+    public void checkSignature(String [] listOfArguments) throws IllegalCodeException {
+        Iterator<Variable> variablesIterator = variablesArray.iterator();
+        for (String currentArg: listOfArguments) {
+            if (!variablesIterator.hasNext()) {
+                throw new BadCodeException("Error: too many arguments were given to the method.");
+            }
+            try {
+            variablesIterator.next().checkVariable(currentArg);
+            }
+            catch (BadVariableException e) {
+                throw new BadCodeException("Error: the arguments doesn't correspond to the function signature");
+            }
+        }
     }
 
     /**
@@ -75,5 +89,19 @@ public class Scope {
      */
     public Scope getOuterScope() {
         return OuterScope;
+    }
+
+    /**
+     * this method checks if there is another variable in this scope with the given name.
+     * @param name: a name to search
+     * @return : true if the name exists, false otherwise.
+     */
+    public boolean searchForNameInVaraiblesList(String name) {
+        for (Variable variable : variablesArray) {
+            if (variable.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -6,7 +6,7 @@ package oop.ex6.main;
  */
 public class BadVariableException extends IllegalCodeException {
 
-    private static final String INIT_ERROR = "Error: thee Variable wasn't initialized correctly.";
+    private static final String INIT_ERROR = "Error: the Variable wasn't initialized correctly.";
 
     /**
      * a default constructor.

@@ -213,11 +213,38 @@ public class FileParser {
         String line;
         line = inputBuffer.readLine();
         while (line != null){
-
+            genericMatcher = commentPattern.matcher(line);
+            if (genericMatcher.matches()) {
+            }
+            genericMatcher = returnPattern.matcher(line.trim());
+            if (genericMatcher.matches()){
+                checkForUnsupportedMainOperation(currentScope);
+                line = inputBuffer.readLine();
+                if (line == null) {
+                    throw new BadCodeException("Error: a return statement in EOF with no brackets.");
+                }
+                genericMatcher = closeParenthesesPattern.matcher(line.trim());
+                if (genericMatcher.matches()) {
+                    currentScope = currentScope.getOuterScope();
+                }
+                continue; // move to the next iteration without reading another line.
+            }
+            genericMatcher = closeParenthesesPattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                currentScope = currentScope.getOuterScope();
+            }
+            genericMatcher = funcCallPattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                checkForUnsupportedMainOperation(currentScope);
+                Scope functionScope = bringScope(scopeMatcher.group(1));
+                String [] parametersList = scopeMatcher.group(2).split(",");
+                functionScope.checkSignature(parametersList);
+            }
+            else {
+                throw new BadCodeException("Error: Unsupported line of code.");
+            }
             line = inputBuffer.readLine();
         }
-
-
     }
 
     /**

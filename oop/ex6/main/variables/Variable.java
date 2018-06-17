@@ -1,5 +1,6 @@
 package oop.ex6.main.variables;
 
+import oop.ex6.main.BadCodeException;
 import oop.ex6.main.BadVariableException; //FIXME think about the location..
 import oop.ex6.main.IllegalCodeException;
 import oop.ex6.main.Scope;
@@ -41,6 +42,7 @@ public abstract class Variable {
             throws IllegalCodeException {
         this.isFinal = isFinal;
         this.isInitialize = isInitialize;
+        variableScope = currentScope;
         try{
             checkName(name);
             if(isInitialize) {
@@ -52,14 +54,14 @@ public abstract class Variable {
         }
     }
 
-    /**
-     * a function that receives a String and checks whether the given type is equal to the variable's type.
-     * @param type: a type to compare.
-     * @return : true if it matches, false otherwise.
-     */
-    public Boolean variableTypeMatch(String type) {
-        return this.type.equals(type);
-    }
+//    /**
+//     * a function that receives a String and checks whether the given type is equal to the variable's type.
+//     * @param type: a type to compare.
+//     * @return : true if it matches, false otherwise.
+//     */
+//    public Boolean variableTypeMatch(String type) {
+//        return this.type.equals(type);
+//    }
 
 
     /**
@@ -90,7 +92,10 @@ public abstract class Variable {
 
 
     /* this private method checks whether the name of the variable is correct. */
-    private void checkName(String name) throws BadVariableException {
+    private void checkName(String name) throws IllegalCodeException {
+        if (variableScope.searchForNameInVaraiblesList(name)) {
+            throw new BadCodeException("Error: two arguments with same name in the same scope.");
+        }
         if(name.trim().matches(MATCH_NAME)) {
             this.name = name;
         }
