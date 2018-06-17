@@ -1,5 +1,6 @@
 package oop.ex6.main;
 
+import oop.ex6.main.variables.Variable;
 import oop.ex6.main.variables.VariablesFactory;
 
 import java.io.*;
@@ -21,11 +22,12 @@ public class FileParser {
     public static final String INT="int",DOUBLE="double", STRING="String",FINAL="final", BOOLEAN="boolean"
             , CHAR="char", COMMA=",", EQUAL="=", SPACE = "\\s+", RETURN = "return;"; //TODO check for unused.
 
+    private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
 
     private final String MATCH_VARIABLE = "(final?)\\s*(int|double|char|String|boolean)\\s*(\\w)\\s*(=\\s*" +
             "([^>]*))?;";
 
-    private final String MATCH_VARIABLE_SECCONDRY = "(\\w)\\s*(=\\s*([^>]*))?";
+    private final String MATCH_VARIABLE_SECCONDRY = "(\\w*)\\s*(=\\s*([^>]*))?";
 
     private final String MATCH_BRACKET = "(if|while|void)\\s*[^\\{\\}]*\\{";
 
@@ -33,10 +35,11 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+(([a-zA-Z])+\\s)|" +
-            "(([a-zA-Z]|_)+\\s,\\s*))";
+    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+" +
+            "("+MATCH_NAME+"\\s*)|" + "("+MATCH_NAME+"\\s*,\\s*))";
 
-    private final String MATCH_TYPE_PARAMETER2 =  "(int|double|char|String|boolean)\\s+([a-zA-Z])+\\s*,?";
+    private final String MATCH_TYPE_PARAMETER2 =  "(int|double|char|String|boolean)" +
+            "\\s+"+MATCH_NAME+"\\s*,?";
 
     private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
 
@@ -72,7 +75,8 @@ public class FileParser {
 
     private final Pattern returnPattern = Pattern.compile(MATCH_RETURN);
 
-    private final String MATCH_ASSIGN = "\\w*\\s*=\\s*\\w*(,\\w*\\s*=\\s*\\w*)*;";
+    private final String MATCH_ASSIGN = MATCH_NAME+"\\s*=\\s*"+MATCH_NAME+"(," +
+            "\\s*"+MATCH_NAME+"\\s*=\\s*"+MATCH_NAME+")*;";
 
     private final Pattern assignPattern = Pattern.compile(MATCH_ASSIGN);
 
@@ -231,8 +235,16 @@ public class FileParser {
             genericMatcher = assignPattern.matcher(line.trim());
             if(genericMatcher.matches()){
                 String [] variableList = line.split(",");
-
-
+                for(String assigment:variableList){
+                    String [] variables = assigment.split("=");
+                    String variable1 = variables[0];
+                    String value = variables[1];
+                    Variable var = currentScope.getVariable(variable1.trim());
+                    if(var == null ||var.getFinal()){
+                        throw new BadCodeException("Error: cannot assign to this variable variable");
+                    }
+                    var.checkVariable(value.trim());
+                }
             }
 
 
