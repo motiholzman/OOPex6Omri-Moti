@@ -1,6 +1,6 @@
 package oop.ex6.main;
 
-import oop.ex6.main.variables.*;
+import oop.ex6.main.variables.VariablesFactory;
 
 import java.io.*;
 import java.util.HashSet;
@@ -19,7 +19,7 @@ public class FileParser {
     private BufferedReader inputBuffer;
 
     public static final String INT="int",DOUBLE="double", STRING="String",FINAL="final", BOOLEAN="boolean"
-    , CHAR="char", COMMA=",", EQUAL="=", SPACE = "\\s+", RETURN = "return;";
+            , CHAR="char", COMMA=",", EQUAL="=", SPACE = "\\s+", RETURN = "return;"; //TODO check for unused.
 
 
     private final String MATCH_VARIABLE = "(final?)\\s*(int|double|char|String|boolean)\\s*(\\w)\\s*(=\\s*" +
@@ -53,6 +53,8 @@ public class FileParser {
 
     private final String MATCH_EMPTY_LINE = "\\s*";
 
+    private final String COMMENT_PATTERN = "(^\\/\\/).*";
+
     private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
 
     private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*(final)?\\s*\\w*(," +
@@ -63,6 +65,12 @@ public class FileParser {
     private final String MATCH_IF_WHILE_CALL = "(if|while)\\s*\\((\\w*(\\s*(&&|\\|\\|)\\s*\\w*)*)\\)\\s*\\{";
 
     private final Pattern ifWhilePattern = Pattern.compile(MATCH_IF_WHILE_CALL);
+
+    /* the pattern object for comparing regex */
+    private Pattern genericPatten;
+
+    /* the matcher object for comparing regex */
+    private Matcher genericMatcher;
 
 
 
@@ -92,40 +100,9 @@ public class FileParser {
 
 
     /**
-     * this method adds a variable to the scope
-     * @param type the type of the variable
-     * @param variableFinal if the variable is final
-     * @param variableName the variable name
-     * @param variableValue the variable value
-     * @param scope the scope we want to add the value to
-     * @param variableInitiated if the value is initiated
-     * @throws IllegalCodeException
-     */
-    private void variableFromLine(String type,Boolean variableFinal,String variableName,String
-            variableValue,Scope scope,Boolean variableInitiated) throws IllegalCodeException {
-        Variable variable;
-        if (type.equals(INT)) {
-            variable = new IntVariable(variableName, variableValue, variableFinal,variableInitiated);
-        } else if (type.equals(DOUBLE)) {
-            variable = new DoubleVariable(variableName, variableValue, variableFinal,variableInitiated);
-        } else if (type.equals(CHAR)) {
-            variable = new CharVariable(variableName, variableValue, variableFinal,variableInitiated);
-        } else if (type.equals(STRING)) {
-            variable = new StringVariable(variableName, variableValue, variableFinal,variableInitiated);
-        } else if (type.equals(BOOLEAN)) {
-            variable = new BooleanVariable(variableName, variableValue, variableFinal,variableInitiated);
-        } else {// not a valid variable
-            throw new IllegalCodeException();
-        }
-        scope.addVariable(variable);
-    }
-
-
-
-    /**
      *
      */
-    public Scope preProssessFile() throws IllegalCodeException, IOException{
+    public Scope preProcessFile() throws IllegalCodeException, IOException{
         Stack<String> bracket = new Stack<>();
         String line = inputBuffer.readLine();
         Scope mainScope = new Scope(null,"main");
@@ -159,8 +136,8 @@ public class FileParser {
             Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
             String type = typeParamMatcher.group(1);
             String variableName = typeParamMatcher.group(2);
-            variableFromLine
-                    (type,null,variableName,null,scope,null);
+            VariablesFactory.createVariable(type,null, variableName,null, scope,
+                    null);
             parametersType[index] = type;
             index++;
         }
@@ -192,22 +169,28 @@ public class FileParser {
         String variableName = variableMatcher.group(3);
         String variableValue = variableMatcher.group(5);
         Boolean variableInitiated = variableList[0].contains(EQUAL);
-        variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
+        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
+                variableInitiated);
         for(int index = 1; index<variableList.length;index++){
             variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
             variableName = variableMatcher.group(3);
             variableValue = variableMatcher.group(5);
             variableInitiated = variableList[index].contains(EQUAL);
-            variableFromLine(type,variableFinal,variableName,variableValue,mainScope,variableInitiated);
+            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
+                    variableInitiated);
         }
     }
 
     public void fileProsses()throws IllegalCodeException, IOException{
-        Scope mainScope = preProssessFile();
+        Scope mainScope = preProcessFile();
         Reader inputFile = new FileReader(filePath);
         inputBuffer = new BufferedReader(inputFile);
 
 
     }
 
+    private void checkForComment(String line) throws IllegalCodeException {
+        genericPatten = Pattern.compile(COMMENT_PATTERN);
+        genericMatcher = genericPatten.matcher(line);
+    }
 }

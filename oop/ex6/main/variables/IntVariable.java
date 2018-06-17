@@ -2,6 +2,7 @@ package oop.ex6.main.variables;
 
 import oop.ex6.main.BadVariableException;
 import oop.ex6.main.IllegalCodeException;
+import oop.ex6.main.Scope;
 
 /**
  * {@inheritDoc}
@@ -14,13 +15,14 @@ public class IntVariable extends Variable {
     /**
      * this constructor initialize the string Variable.
      * @param name : the name of the variable.
-     * @param value: a value for the Variable.
-     * @param isFinal: indicates whether the variable is consider final
+     * @param value : a value for the Variable.
+     * @param isFinal : indicates whether the variable is consider final
+     * @param currentScope : the scope which the variable belongs to.
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public IntVariable(String name, String value, Boolean isFinal, Boolean isInitialize)
+    public IntVariable(String name, String value, Boolean isFinal, Boolean isInitialize, Scope currentScope)
             throws IllegalCodeException {
-        super(name, value, isFinal,isInitialize);
+        super(name, value, isFinal,isInitialize, currentScope);
         this.type = "int";
     }
 
@@ -29,12 +31,13 @@ public class IntVariable extends Variable {
      * {@inheritDoc}
      * this method checks that the given value is an integer.
      */
-    public void checkVariable(String value) throws BadVariableException{
-        if(value.trim().matches(MATCH_INT)){
-            return;
-        }
-        else {
-            throw new BadVariableException();
+    public void checkVariable(String value) throws BadVariableException {
+        if(!isVariableAssignmentValid(value)) {
+            if (value.trim().matches(MATCH_INT)) {
+                return;
+            } else {
+                throw new BadVariableException();
+            }
         }
     }
 

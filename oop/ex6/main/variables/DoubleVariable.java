@@ -2,6 +2,7 @@ package oop.ex6.main.variables;
 
 import oop.ex6.main.BadVariableException;
 import oop.ex6.main.IllegalCodeException;
+import oop.ex6.main.Scope;
 
 /**
  * {@inheritDoc}
@@ -15,13 +16,14 @@ public class DoubleVariable extends Variable {
     /**
      * this constructor initialize the Double Variable.
      * @param name : the name of the variable.
-     * @param value: a value for the Variable.
-     * @param isFinal: indicates whether the variable is consider final
+     * @param value : a value for the Variable.
+     * @param isFinal : indicates whether the variable is consider final
+     * @param currentScope: the scope which the variable belongs to.
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public DoubleVariable(String name, String value, Boolean isFinal, Boolean isInitialize)
+    public DoubleVariable(String name, String value, Boolean isFinal, Boolean isInitialize, Scope currentScope)
             throws IllegalCodeException{
-        super(name, value, isFinal,isInitialize);
+        super(name, value, isFinal,isInitialize, currentScope);
         this.type = "double";
     }
 
@@ -30,11 +32,12 @@ public class DoubleVariable extends Variable {
      * {@inheritDoc}
      */
     public void checkVariable(String value) throws BadVariableException {
-        if(value.trim().matches(MATCH_DOUBLE)){
-            return;
-        }
-        else {
-            throw new BadVariableException();
+        if (!isVariableAssignmentValid(value)) {
+            if (value.trim().matches(MATCH_DOUBLE)) {
+                return;
+            } else {
+                throw new BadVariableException();
+            }
         }
     }
 

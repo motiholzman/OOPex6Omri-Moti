@@ -26,7 +26,7 @@ public class Sjavac {
             FileParser parser  = null;
             try {
                 parser = new FileParser(filePath);
-                parser.prepossessFile();// creating the first parse of the file so we know all the
+                parser.preProcessFile();// creating the first parse of the file so we know all the
                 // functions and global variables
                 //FIXME add here more logic.
                 parser.closeParser();

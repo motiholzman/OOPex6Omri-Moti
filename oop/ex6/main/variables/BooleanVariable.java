@@ -2,6 +2,7 @@ package oop.ex6.main.variables;
 
 import oop.ex6.main.BadVariableException;
 import oop.ex6.main.IllegalCodeException;
+import oop.ex6.main.Scope;
 
 /**
  * {@inheritDoc}
@@ -15,13 +16,14 @@ public class BooleanVariable extends  Variable {
     /**
      * this constructor initialize the Boolean variable.
      * @param name : the name of the variable.
-     * @param value: a value for the Variable.
-     * @param isFinal: indicates whether the variable is consider final
+     * @param value : a value for the Variable.
+     * @param isFinal : indicates whether the variable is consider final
+     * @param currentScope: the scope which the variable belongs to.
      * @throws IllegalCodeException : in case of instance wasn't initialized correctly.
      */
-    public BooleanVariable(String name, String value, Boolean isFinal, Boolean isInitialize)
-            throws IllegalCodeException{
-        super(name, value, isFinal, isInitialize);
+    public BooleanVariable(String name, String value, Boolean isFinal, Boolean isInitialize,
+                           Scope currentScope) throws IllegalCodeException{
+        super(name, value, isFinal, isInitialize, currentScope);
         type = "Boolean";
     }
 
@@ -32,11 +34,12 @@ public class BooleanVariable extends  Variable {
      * number otherwise throws an exception.
      */
     public void checkVariable(String value) throws BadVariableException {
-        if(value.trim().matches(MATCH_BOOLEAN)){
-            return;
-        }
-        else {
-            throw new BadVariableException();
+        if (!isVariableAssignmentValid(value)) {
+            if (value.trim().matches(MATCH_BOOLEAN)) {
+                return;
+            } else {
+                throw new BadVariableException();
+            }
         }
     }
 
