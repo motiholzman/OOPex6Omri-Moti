@@ -59,8 +59,8 @@ public class FileParser {
 
     private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
 
-    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*(final)?(\\s*[\\w*=])*" +
-            "(\\s*,\\s*(final)?(\\s*[\\w*=])*)*)\\)\\s*;";
+    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*[^>]*)?(\\s*,\\s*([^>]*)*)" +
+            "\\)\\s*;";
 
     private final Pattern funcCallPattern = Pattern.compile(MATCH_FUNC_CALL);
 
@@ -203,7 +203,7 @@ public class FileParser {
                 return currentScope;
             }
         }
-        throw new IllegalCodeException();
+        throw new BadCodeException("Error: method doesnt exist");
     }
 
     public void fileProcess()throws IllegalCodeException, IOException{
@@ -226,6 +226,11 @@ public class FileParser {
             genericMatcher = ScopePattern.matcher(line.trim());
             if(genericMatcher.matches()){
                 String scopeName = scopeMatcher.group(1);
+                currentScope = bringScope(scopeName);
+            }
+            genericMatcher = assignPattern.matcher(line.trim());
+            if(genericMatcher.matches()){
+                String [] variableList = line.split(",");
 
 
             }
