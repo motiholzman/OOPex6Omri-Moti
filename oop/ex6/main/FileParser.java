@@ -45,9 +45,9 @@ public class FileParser {
 
     private final Pattern ScopePattern = Pattern.compile(MATCH_SCOPE);
 
-    private Matcher scopeMatcher ;
+    private Matcher scopeMatcher;
 
-    private Matcher variableMatcher ;
+    private Matcher variableMatcher;
 
     private String filePath;
 
@@ -75,6 +75,10 @@ public class FileParser {
     private final String MATCH_ASSIGN = "\\w*\\s*=\\s*\\w*(,\\w*\\s*=\\s*\\w*)*;";
 
     private final Pattern assignPattern = Pattern.compile(MATCH_ASSIGN);
+
+    private final String MATCH_CLOSE_PARENTHESES = "[}]";
+
+    private final Pattern closeParenthesesPattern = Pattern.compile(MATCH_CLOSE_PARENTHESES);
 
 
 

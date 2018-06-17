@@ -66,4 +66,10 @@ public class Scope {
         variablesHashSet.add(variable);
     }
 
+    /**
+     * @return : returns the name of the scope.
+     */
+    public String getName() {
+        return name;
+    }
 }
