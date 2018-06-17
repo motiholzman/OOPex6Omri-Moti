@@ -38,7 +38,7 @@ public class FileParser {
     private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+" +
             "("+MATCH_NAME+"\\s*)|" + "("+MATCH_NAME+"\\s*,\\s*))";
 
-    private final String MATCH_TYPE_PARAMETER2 =  "(int|double|char|String|boolean)" +
+    private final String MATCH_TYPE_PARAMETER2 =  "(final)?(int|double|char|String|boolean)" +
             "\\s+"+MATCH_NAME+"\\s*,?";
 
     private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
@@ -143,25 +143,24 @@ public class FileParser {
         return mainScope;
     }
 
-    private void handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException, IOException {
+    private void handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException,
+            IOException {
         String line;
         bracket.push("{");//add bracket to the stack because we opened new scope
         // this is passable new scope and we need to advance the line to the end of the scope
         String scopeName = scopeMatcher.group(1);
         Scope scope = new Scope(mainScope,scopeName);
         String [] parametersList = scopeMatcher.group(2).split(",");
-        String [] parametersType = new String[parametersList.length];
         int index = 0;
         for(String typeValueString: parametersList){
             Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
-            String type = typeParamMatcher.group(1);
-            String variableName = typeParamMatcher.group(2);
-            VariablesFactory.createVariable(type,null, variableName,null, scope,
+            Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
+            String type = typeParamMatcher.group(2);
+            String variableName = typeParamMatcher.group(3);
+            VariablesFactory.createVariable(type,variableFinal, variableName,null, scope,
                     null);
-            parametersType[index] = type;
             index++;
         }
-        scope.setParameters(parametersType);
         Scopes.add(scope);
         // now we need to move to the end of the method by stack
         //checking that every bracket that opens is also closing
@@ -183,20 +182,20 @@ public class FileParser {
         }
     }
 
-    private void createGlobalVariable(Scope scope, String[] variableList) throws IllegalCodeException {
+    private void createGlobalVariable(Scope mainScope, String[] variableList) throws IllegalCodeException {
         String type = variableMatcher.group(2);
         Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
         String variableName = variableMatcher.group(3);
         String variableValue = variableMatcher.group(5);
         Boolean variableInitiated = variableList[0].contains(EQUAL);
-        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, scope,
+        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
                 variableInitiated);
         for(int index = 1; index<variableList.length;index++){
             variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
             variableName = variableMatcher.group(3);
             variableValue = variableMatcher.group(5);
             variableInitiated = variableList[index].contains(EQUAL);
-            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, scope,
+            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
                     variableInitiated);
         }
     }
@@ -207,7 +206,7 @@ public class FileParser {
                 return currentScope;
             }
         }
-        throw new BadCodeException("Error: method doesnt exist");
+        throw new BadCodeException("Error: method doesn't exist");
     }
 
     public void fileProcess()throws IllegalCodeException, IOException{
@@ -245,14 +244,21 @@ public class FileParser {
                     }
                     var.checkVariable(value.trim());
                 }
-            }
-
-
-
             line = inputBuffer.readLine();
         }
 
 
+    }
+
+    /**
+     * this method checks if some operations occurred in the main Scope. in that case, throws an exception.
+     * @param currentScope: the current scope of the program.
+     * @throws BadCodeException: in case an operations (such as method call) occurred in the main scope.
+     */
+    private void checkForUnsupportedMainOperation(Scope currentScope) throws BadCodeException {
+        if (currentScope.getName().equals("main")) {
+            throw new BadCodeException("Error: there is a return statement in the main scope.");
+        }
     }
 
 }

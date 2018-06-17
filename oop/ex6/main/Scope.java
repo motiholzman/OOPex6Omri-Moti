@@ -2,8 +2,8 @@ package oop.ex6.main;
 
 import oop.ex6.main.variables.Variable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.regex.Matcher;
 
 /**
  * this class implements a Scope object
@@ -13,16 +13,12 @@ public class Scope {
     /* the Scope's outer Scope. if it is null - this is the main Scope of the file. */
     private Scope OuterScope;
 
-    /* the Scope's variables. this set include only the Scope's local variables */
-    private HashSet <Variable> variablesHashSet;
+    /* the Scope's variables. this ArrayList include only the Scope's local variables */
+    private ArrayList<Variable> variablesArray;
 
-    private String [] parametersType;
-
+    /* the Scope's name. */
     private String name;
 
-
-    // at the
-    // parser.
 
     /**
      * this constructor initialize the object.
@@ -30,9 +26,8 @@ public class Scope {
      */
     public Scope (Scope fatherScope,String name) {
         this.OuterScope = fatherScope;
-        this.parametersType = null;
         this.name = name;
-        variablesHashSet = new HashSet<>();
+        variablesArray = new ArrayList<>();
     }
 
 //    /**
@@ -47,7 +42,7 @@ public class Scope {
     public Variable getVariable (String variableName) {
         Scope currentScope = this;
         while (currentScope != null) {
-            for (Variable variable : currentScope.variablesHashSet) {
+            for (Variable variable : currentScope.variablesArray) {
                 if (variable.getName().equals(variableName))
                     return variable;
             }
@@ -56,14 +51,13 @@ public class Scope {
         return null;
     }
 
-
-    public void setParameters(String [] parametersType){
-        this.parametersType = parametersType;
-    }
-
+    /**
+     * add a variable to the Variable's array.
+     * @param variable : a variable to add.
+     */
     public void addVariable(Variable variable)  {
         // we add variable only if it have correct values and valid name
-        variablesHashSet.add(variable);
+        variablesArray.add(variable);
     }
 
     /**
@@ -71,5 +65,12 @@ public class Scope {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return : the outer scope.
+     */
+    public Scope getOuterScope() {
+        return OuterScope;
     }
 }
