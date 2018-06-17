@@ -57,14 +57,24 @@ public class FileParser {
 
     private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
 
-    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*(final)?\\s*\\w*(," +
-            "\\s*(final)?\\w+)*)\\)\\s*;";
+    private final String MATCH_FUNC_CALL = "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\((\\s*(final)?(\\s*[\\w*=])*" +
+            "(\\s*,\\s*(final)?(\\s*[\\w*=])*)*)\\)\\s*;";
 
     private final Pattern funcCallPattern = Pattern.compile(MATCH_FUNC_CALL);
 
     private final String MATCH_IF_WHILE_CALL = "(if|while)\\s*\\((\\w*(\\s*(&&|\\|\\|)\\s*\\w*)*)\\)\\s*\\{";
 
     private final Pattern ifWhilePattern = Pattern.compile(MATCH_IF_WHILE_CALL);
+
+    private final String MATCH_RETURN = "\\s*return\\s*;";
+
+    private final Pattern returnPattern = Pattern.compile(MATCH_RETURN);
+
+    private final String MATCH_ASSIGN = "\\w*\\s*=\\s*\\w*(,\\w*\\s*=\\s*\\w*)*;";
+
+    private final Pattern assignPattern = Pattern.compile(MATCH_ASSIGN);
+
+
 
     /* the pattern object for comparing regex */
     private Pattern genericPatten;
@@ -188,9 +198,5 @@ public class FileParser {
 
 
     }
-
-    private void checkForComment(String line) throws IllegalCodeException {
-        genericPatten = Pattern.compile(COMMENT_PATTERN);
-        genericMatcher = genericPatten.matcher(line);
-    }
+    
 }
