@@ -28,7 +28,7 @@ public class StringVariable extends Variable {
         type = "String";
     }
 
-    @Override
+
     /**
      * {@inheritDoc}
      * we have no constraints on this value.

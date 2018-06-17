@@ -118,7 +118,10 @@ public class FileParser {
 
 
     /**
-     *
+     * this method pre process the file in order to get its methods and global variables
+     * @return Scope the main scope
+     * @throws IllegalCodeException - if there is a problem with the variables or the methods
+     * @throws IOException - if there is a problem with the buffer reader of the file
      */
     public Scope preProcessFile() throws IllegalCodeException, IOException {
         Stack<String> bracket = new Stack<>();
@@ -141,6 +144,13 @@ public class FileParser {
         return mainScope;
     }
 
+    /**
+     * this method handles a new scope and create its signature
+     * @param bracket - a Stack that holds the number of bracket to check if its legal
+     * @param mainScope - the main scope of the function
+     * @throws IllegalCodeException-if there is a problem with the variables or the methods
+     * @throws IOException - if there is a problem with the buffer reader of the file
+     */
     private void handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException,
             IOException {
         String line;
@@ -180,6 +190,12 @@ public class FileParser {
         }
     }
 
+    /**
+     * this method create and add a new variable to the global variables list
+     * @param mainScope - the main scope of the function
+     * @param variableList - a list of variables to add
+     * @throws IllegalCodeException - if a variable assignment isnt legal
+     */
     private void createGlobalVariable(Scope mainScope, String[] variableList) throws IllegalCodeException {
         String type = variableMatcher.group(2);
         Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
@@ -198,6 +214,12 @@ public class FileParser {
         }
     }
 
+    /**
+     * this method will return the scope with the matching name
+     * @param scopeName - the name of the socpe we want
+     * @return - matching scope
+     * @throws IllegalCodeException - if there is no scope with this name
+     */
     private Scope bringScope(String scopeName) throws IllegalCodeException {
         for (Scope currentScope : Scopes) {
             if (currentScope.getName().equals(scopeName)) {
@@ -207,6 +229,12 @@ public class FileParser {
         throw new BadCodeException("Error: method doesn't exist");
     }
 
+    /**
+     * the main method of FilePearser it will parse the file and check for illegal coding lines if it find
+     * one it will throw exception
+     * @throws IllegalCodeException - if the code is illegal
+     * @throws IOException - if there is a problem with the file reading
+     */
     public void fileProcess() throws IllegalCodeException, IOException {
         Scope currentScope = preProcessFile();
         Reader inputFile = new FileReader(filePath);

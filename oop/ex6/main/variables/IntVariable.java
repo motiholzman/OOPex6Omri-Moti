@@ -26,7 +26,7 @@ public class IntVariable extends Variable {
         this.type = "int";
     }
 
-    @Override
+
     /**
      * {@inheritDoc}
      * this method checks that the given value is an integer.

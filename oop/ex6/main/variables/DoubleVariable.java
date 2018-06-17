@@ -27,7 +27,7 @@ public class DoubleVariable extends Variable {
         this.type = "double";
     }
 
-    @Override
+
     /**
      * {@inheritDoc}
      */

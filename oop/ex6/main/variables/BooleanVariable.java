@@ -27,7 +27,7 @@ public class BooleanVariable extends  Variable {
         type = "Boolean";
     }
 
-    @Override
+
     /**
      * {@inheritDoc}
      * this method checks whether the input for the variable is on of the following: true, false or any

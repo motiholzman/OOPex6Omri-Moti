@@ -26,7 +26,7 @@ public class CharVariable extends Variable {
         type = "Char";
     }
 
-    @Override
+
     /** {@inheritDoc} */
     public void checkVariable(String value) throws BadVariableException {
         if(!isVariableAssignmentValid(value)) {
