@@ -3,6 +3,7 @@ package oop.ex6.main;
 import oop.ex6.main.variables.*;
 
 import java.io.*;
+import java.util.HashSet;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,6 +12,8 @@ import java.util.regex.Pattern;
  * this class represents a parser of a file.
  */
 public class FileParser {
+
+    private HashSet<Scope> Scopes = new HashSet<>();
 
     /* a private buffer to rad a file with.*/
     private BufferedReader inputBuffer;
@@ -148,9 +151,11 @@ public class FileParser {
                     index++;
                 }
                 scope.setParameters(parametersType);
+                Scopes.add(scope);
                 // now we need to move to the end of the method by stack
                 //checking that every bracket that opens is also closing
-                while(!bracket.empty()) {
+                line = inputBuffer.readLine();
+                while(!bracket.empty() && line != null) {
                     if (line.trim().matches(MATCH_BRACKET)) {
                         bracket.push("{");
                     } else if (line.trim().equals("}")) {
@@ -162,7 +167,9 @@ public class FileParser {
                     }
                     line = inputBuffer.readLine();
                 }
-
+                if(!bracket.empty()){
+                    throw new IllegalCodeException();
+                }
 
 
 
