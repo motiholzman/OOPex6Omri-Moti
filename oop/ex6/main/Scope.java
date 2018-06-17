@@ -66,4 +66,7 @@ public class Scope {
         variablesHashSet.add(variable);
     }
 
+    public String getName() {
+        return name;
+    }
 }
