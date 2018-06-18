@@ -10,7 +10,7 @@ import oop.ex6.main.Scope;
  */
 public class BooleanVariable extends  Variable {
 
-    private static final String MATCH_DOUBLE = "-?(\\d)+([.](\\d*))?";
+    private static final String MATCH_DOUBLE = "(-?(\\d)+([.](\\d*))?)";
     private static final String MATCH_BOOLEAN = "true|false|"+ MATCH_DOUBLE;
 
     /**

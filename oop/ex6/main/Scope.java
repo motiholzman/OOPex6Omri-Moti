@@ -63,7 +63,7 @@ public class Scope {
                 if (variable.getName().equals(variableName))
                     return variable;
             }
-            currentScope = this.OuterScope;
+            currentScope = currentScope.OuterScope;
         }
         return null;
     }

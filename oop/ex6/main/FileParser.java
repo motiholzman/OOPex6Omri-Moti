@@ -82,8 +82,6 @@ public class FileParser {
     private final Pattern closeParenthesesPattern = Pattern.compile(MATCH_CLOSE_PARENTHESES);
 
 
-    /* the pattern object for comparing regex */
-    private Pattern genericPatten;
 
     /* the matcher object for comparing regex */
     private Matcher genericMatcher;
@@ -140,10 +138,12 @@ public class FileParser {
             }
             scopeMatcher = ScopePattern.matcher(line);
             if (scopeMatcher.matches()) {
-                handleNewScope(bracket, mainScope);
+                line = handleNewScope(bracket, mainScope);
             }
-            line = inputBuffer.readLine();
-            fileLines.add(line);
+            else {
+                line = inputBuffer.readLine();
+                fileLines.add(line);
+            }
         }
         return mainScope;
     }
@@ -155,22 +155,25 @@ public class FileParser {
      * @throws IllegalCodeException-if there is a problem with the variables or the methods
      * @throws IOException - if there is a problem with the buffer reader of the file
      */
-    private void handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException,
+    private String handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException,
             IOException {
         String line;
         bracket.push("{");//add bracket to the stack because we opened new scope
         // this is passable new scope and we need to advance the line to the end of the scope
         String scopeName = scopeMatcher.group(1);
         Scope scope = new Scope(mainScope, scopeName);
-        String[] parametersList = scopeMatcher.group(2).split(",");
-        for (String typeValueString : parametersList) {
-            Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
-            if(typeParamMatcher.matches()) {
-                Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
-                String type = typeParamMatcher.group(2);
-                String variableName = typeParamMatcher.group(3);
-                VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
-                        null);
+        String args = scopeMatcher.group(2);
+        if(args != null) {
+            String[] parametersList = scopeMatcher.group(2).split(",");
+            for (String typeValueString : parametersList) {
+                Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
+                if (typeParamMatcher.matches()) {
+                    Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
+                    String type = typeParamMatcher.group(2);
+                    String variableName = typeParamMatcher.group(3);
+                    VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
+                            null);
+                }
             }
         }
         Scopes.add(scope);
@@ -194,6 +197,7 @@ public class FileParser {
         if (!bracket.empty()) {
             throw new IllegalCodeException();
         }
+        return line;
     }
 
     /**
@@ -245,12 +249,15 @@ public class FileParser {
         Scope currentScope = preProcessFile();
         String line;
         line = fileLines.pop();
-        while (fileLines.size() >= 1){
-			 genericMatcher = emptyLinePattern.matcher(line.trim());
+        while (line != null){
+            boolean matchFlag = false;
+            genericMatcher = emptyLinePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                matchFlag = true;
             }
             genericMatcher = VariablePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                matchFlag = true;
                 if (!currentScope.getName().equals("main")) {
                     // if the current scope isnt main we need to know those variables
                     String[] variableList = line.split(",");
@@ -259,11 +266,13 @@ public class FileParser {
             }
             genericMatcher = ScopePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                matchFlag = true;
                 String scopeName = scopeMatcher.group(1);
                 currentScope = bringScope(scopeName);
             }
             genericMatcher = assignPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                matchFlag = true;
                 String[] variableList = line.split(",");
                 for (String assigment : variableList) {
                     String[] variables = assigment.split("=");
@@ -279,6 +288,7 @@ public class FileParser {
             }
             genericMatcher = ifWhilePattern.matcher(line.trim());
             if(genericMatcher.matches()){
+                matchFlag = true;
                 String scopeType = genericMatcher.group(1);
                 String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
                 currentScope = new IfWhile(currentScope,scopeType);
@@ -286,9 +296,11 @@ public class FileParser {
             }
 			 genericMatcher = commentPattern.matcher(line);
             if (genericMatcher.matches()) {
+                matchFlag = true;
             }
             genericMatcher = returnPattern.matcher(line.trim());
             if (genericMatcher.matches()){
+                matchFlag = true;
                 checkForUnsupportedMainOperation(currentScope);
                 line =  fileLines.pop();
                 if (line == null) {
@@ -298,24 +310,25 @@ public class FileParser {
                 if (genericMatcher.matches()) {
                     currentScope = currentScope.getOuterScope();
                 }
-                continue; // move to the next iteration without reading another line.
             }
             genericMatcher = closeParenthesesPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                matchFlag = true;
                 currentScope = currentScope.getOuterScope();
             }
             genericMatcher = funcCallPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                matchFlag = true;
                 checkForUnsupportedMainOperation(currentScope);
                 Scope functionScope = bringScope(scopeMatcher.group(1));
                 String [] parametersList = scopeMatcher.group(2).split(",");
                 functionScope.checkSignature(parametersList);
             }
-            else {
+            if(!matchFlag) {
                 throw new BadCodeException("Error: Unsupported line of code.");
             }
 			line = fileLines.pop();
-            
+
         }
     }
     /**
