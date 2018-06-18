@@ -36,6 +36,7 @@ public class Sjavac {
                 if (parser != null) {
                     parser.closeParser();
                 }
+                throw new IOException();
             }
         }
         catch (IOException e) {
