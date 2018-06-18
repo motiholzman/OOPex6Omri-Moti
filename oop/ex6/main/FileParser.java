@@ -35,16 +35,13 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+" +
-            "(" + MATCH_NAME + "\\s*)|" + "(" + MATCH_NAME + "\\s*,\\s*))";
-
-    private final String MATCH_TYPE_PARAMETER2 = "(final)?(int|double|char|String|boolean)" +
-            "\\s+" + MATCH_NAME + "\\s*,?";
+    private final String MATCH_TYPE_PARAMETER2 = "(final)?\\s*(int|double|char|String|boolean)" +
+            "\\s*(\\w+)\\s*";
 
     private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
 
-    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\(" +
-            "(" + MATCH_TYPE_PARAMETER + ")\\)\\s*\\{";
+    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\((" +
+            MATCH_TYPE_PARAMETER2 +")?(\\s*,"+MATCH_TYPE_PARAMETER2+")*\\)\\s*\\{";
 
     private final Pattern ScopePattern = Pattern.compile(MATCH_SCOPE);
 
@@ -167,11 +164,13 @@ public class FileParser {
         String[] parametersList = scopeMatcher.group(2).split(",");
         for (String typeValueString : parametersList) {
             Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
-            Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
-            String type = typeParamMatcher.group(2);
-            String variableName = typeParamMatcher.group(3);
-            VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
-                    null);
+            if(typeParamMatcher.matches()) {
+                Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
+                String type = typeParamMatcher.group(2);
+                String variableName = typeParamMatcher.group(3);
+                VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
+                        null);
+            }
         }
         Scopes.add(scope);
         // now we need to move to the end of the method by stack
