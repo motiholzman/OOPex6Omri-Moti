@@ -36,7 +36,7 @@ public class FileParser {
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
     private final String MATCH_TYPE_PARAMETER = "((int|double|char|String|boolean)\\s+" +
-            "(" + MATCH_NAME + "\\s*)|" + "(" + MATCH_NAME + "\\s*,\\s*))";
+            "(" + MATCH_NAME + "\\s*)|" + "(" + MATCH_NAME + "\\s*,\\s*))?";
 
     private final String MATCH_TYPE_PARAMETER2 = "(final)?(int|double|char|String|boolean)" +
             "\\s+" + MATCH_NAME + "\\s*,?";
@@ -106,6 +106,7 @@ public class FileParser {
             this.filePath = filePath;
             Reader inputFile = new FileReader(filePath);
             inputBuffer = new BufferedReader(inputFile);
+            fileLines = new LinkedList<>();
         } catch (FileNotFoundException e) {
             throw new InOutException();
         }
