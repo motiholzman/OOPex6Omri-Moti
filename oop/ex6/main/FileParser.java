@@ -5,6 +5,7 @@ import oop.ex6.main.variables.VariablesFactory;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,6 +91,9 @@ public class FileParser {
     /* the matcher object for comparing regex */
     private Matcher genericMatcher;
 
+    //will save the lines from the file into array
+    private LinkedList<String> fileLines;
+
 
     /**
      * this constructor initialize the objects
@@ -126,6 +130,7 @@ public class FileParser {
     public Scope preProcessFile() throws IllegalCodeException, IOException {
         Stack<String> bracket = new Stack<>();
         String line = inputBuffer.readLine();
+        fileLines.add(line);
         Scope mainScope = new Scope(null, "main");
         String[] variableList;
         while (line != null) {
@@ -140,6 +145,7 @@ public class FileParser {
                 handleNewScope(bracket, mainScope);
             }
             line = inputBuffer.readLine();
+            fileLines.add(line);
         }
         return mainScope;
     }
@@ -159,7 +165,6 @@ public class FileParser {
         String scopeName = scopeMatcher.group(1);
         Scope scope = new Scope(mainScope, scopeName);
         String[] parametersList = scopeMatcher.group(2).split(",");
-        int index = 0;
         for (String typeValueString : parametersList) {
             Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
             Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
@@ -167,12 +172,12 @@ public class FileParser {
             String variableName = typeParamMatcher.group(3);
             VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
                     null);
-            index++;
         }
         Scopes.add(scope);
         // now we need to move to the end of the method by stack
         //checking that every bracket that opens is also closing
         line = inputBuffer.readLine();
+        fileLines.add(line);
         while (!bracket.empty() && line != null) {
             if (line.trim().matches(MATCH_BRACKET)) {
                 bracket.push("{");
@@ -184,6 +189,7 @@ public class FileParser {
                 }
             }
             line = inputBuffer.readLine();
+            fileLines.add(line);
         }
         if (!bracket.empty()) {
             throw new IllegalCodeException();
@@ -237,11 +243,9 @@ public class FileParser {
      */
     public void fileProcess() throws IllegalCodeException, IOException {
         Scope currentScope = preProcessFile();
-        Reader inputFile = new FileReader(filePath);
-        inputBuffer = new BufferedReader(inputFile);
         String line;
-        line = inputBuffer.readLine();
-        while (line != null){
+        line = fileLines.pop();
+        while (fileLines.size() >= 1){
 			 genericMatcher = emptyLinePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
             }
@@ -271,7 +275,7 @@ public class FileParser {
                     }
                     var.checkVariable(value.trim());
                 }
-                line = inputBuffer.readLine();
+                line =  fileLines.pop();
             }
             genericMatcher = ifWhilePattern.matcher(line.trim());
             if(genericMatcher.matches()){
@@ -286,7 +290,7 @@ public class FileParser {
             genericMatcher = returnPattern.matcher(line.trim());
             if (genericMatcher.matches()){
                 checkForUnsupportedMainOperation(currentScope);
-                line = inputBuffer.readLine();
+                line =  fileLines.pop();
                 if (line == null) {
                     throw new BadCodeException("Error: a return statement in EOF with no brackets.");
                 }
@@ -310,7 +314,7 @@ public class FileParser {
             else {
                 throw new BadCodeException("Error: Unsupported line of code.");
             }
-			line = inputBuffer.readLine();
+			line = fileLines.pop();
             
         }
     }
