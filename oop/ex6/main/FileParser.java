@@ -278,9 +278,7 @@ public class FileParser {
                 String scopeType = genericMatcher.group(1);
                 String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
                 currentScope = new IfWhile(currentScope,scopeType);
-                for(String param:parameters){
-                    currentScope.checkSignature(param);
-                }
+                currentScope.checkSignature(parameters);
             }
 			 genericMatcher = commentPattern.matcher(line);
             if (genericMatcher.matches()) {

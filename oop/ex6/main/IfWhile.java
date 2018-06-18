@@ -19,10 +19,13 @@ public class IfWhile extends Scope {
      * this method checks if the scope's signature is correspond to the arguments that appears in the
      * calling to the function.
      */
-    public void checkSignature(String param) throws IllegalCodeException {
+    public void checkSignature(String [] listOfArguments) throws IllegalCodeException {
         BooleanVariable booleanVariable = new BooleanVariable
                 ("boolChecker","true",false,true,this);
+        for(String param:listOfArguments){
             booleanVariable.checkVariable(param);
+        }
+
     }
 
 
