@@ -79,12 +79,12 @@ public abstract class Variable {
      */
     protected boolean isVariableAssignmentValid(String variableName, Scope currentScope) throws
             BadVariableException {
-        Variable otherVariable = variableScope.getVariable(variableName);
+        Variable otherVariable = variableScope.getVariable(variableName, currentScope);
         if (otherVariable == null) {
             return false;
         }
         if ((otherVariable.isInitialize)) {
-            checkVariable(otherVariable.value, );
+            checkVariable(otherVariable.value, currentScope);
             return true;
         }
         throw new BadVariableException();

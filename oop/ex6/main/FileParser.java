@@ -289,11 +289,11 @@ public class FileParser {
                     String[] variables = assigment.split(EQUAL);
                     String variable1 = variables[0];
                     String value = variables[1];
-                    Variable var = currentScope.getVariable(variable1.trim());
+                    Variable var = currentScope.getVariable(variable1.trim(), currentScope);
                     if (var == null || var.getFinal()) {
                         throw new BadCodeException("Error: cannot assign to this variable variable");
                     }
-                    var.checkVariable(value.trim(), );
+                    var.checkVariable(value.trim(), currentScope);
                 }
                 line =  fileLines.pop();
             }
@@ -304,7 +304,7 @@ public class FileParser {
                 String scopeType = genericMatcher.group(1);
                 String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
                 currentScope = new IfWhileScope(currentScope,scopeType);
-                currentScope.checkSignature(parameters);
+                currentScope.checkSignature(parameters, currentScope);
             }
 			 genericMatcher = commentPattern.matcher(line);
             if (genericMatcher.matches()) {
@@ -329,7 +329,7 @@ public class FileParser {
                 checkForUnsupportedMainOperation(currentScope);
                 Scope functionScope = bringScope(genericMatcher.group(1));
                 String [] parametersList = genericMatcher.group(2).split(COMMA);
-                functionScope.checkSignature(parametersList);
+                functionScope.checkSignature(parametersList, currentScope);
             }
             if(!matchFlag) {
                 throw new BadCodeException("Error: Unsupported line of code.");

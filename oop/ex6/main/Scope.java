@@ -37,9 +37,10 @@ public class Scope {
      * this method checks if the scope's signature is correspond to the arguments that appears in the
      * calling to the function.
      * @param listOfArguments : the arguments that was gave to the function when it was called.
+     * @param currentScope
      * @throws IllegalCodeException: in case the arguments doesn't correspond to the function signature.
      * */
-    public void checkSignature(String [] listOfArguments) throws IllegalCodeException {
+    public void checkSignature(String[] listOfArguments, Scope currentScope) throws IllegalCodeException {
         // this is an iterator of the variables of the scopes.
         Iterator<Variable> variablesIterator = variablesArray.iterator();
         for (int i = 0; i < listOfArguments.length; i++) {
@@ -49,7 +50,7 @@ public class Scope {
             }
             try {
                 Variable currentScopeVariable = variablesIterator.next();
-                currentScopeVariable.checkVariable(listOfArguments[i], );
+                currentScopeVariable.checkVariable(listOfArguments[i], currentScope);
             }
             catch (BadVariableException e) {
                 throw new BadCodeException(
@@ -60,10 +61,11 @@ public class Scope {
 
     /**
      * @param variableName : a string represents a name of a variable.
+     * @param searchScope
      * @return: the most inner variable (relative to the scope's hierarchy) with that name.
      */
-    public Variable getVariable (String variableName) {
-        Scope currentScope = this;
+    public Variable getVariable(String variableName, Scope searchScope) {
+        Scope currentScope = searchScope;
         while (currentScope != null) {
             for (Variable variable : currentScope.variablesArray) {
                 if (variable.getName().equals(variableName))

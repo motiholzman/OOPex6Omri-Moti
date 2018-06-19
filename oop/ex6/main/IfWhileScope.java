@@ -19,13 +19,14 @@ public class IfWhileScope extends Scope {
      * this method checks if the scope's signature is correspond to the arguments that appears in the
      * calling to the function. which are booleans
      * @param listOfArguments : the arguments that was gave to the function when it was called.
+     * @param currentScope
      * @throws IllegalCodeException - if the arguments arent legal
      */
-    public void checkSignature(String [] listOfArguments) throws IllegalCodeException {
+    public void checkSignature(String[] listOfArguments, Scope currentScope) throws IllegalCodeException {
         BooleanVariable booleanVariable = new BooleanVariable
                 ("boolChecker","true",false,true,this);
         for(String param:listOfArguments){
-            booleanVariable.checkVariable(param.trim(), );
+            booleanVariable.checkVariable(param.trim(), currentScope);
         }
 
     }

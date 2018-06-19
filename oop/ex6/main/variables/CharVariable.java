@@ -30,7 +30,7 @@ public class CharVariable extends Variable {
 
     /** {@inheritDoc} */
     public void checkVariable(String value, Scope currentScope) throws BadVariableException {
-        if(!isVariableAssignmentValid(value)) {
+        if(!isVariableAssignmentValid(value, currentScope)) {
             if (value.trim().matches(MATCH_CHAR)) {
                 return;
             } else {

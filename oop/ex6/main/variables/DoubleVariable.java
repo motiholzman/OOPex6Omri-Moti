@@ -32,7 +32,7 @@ public class DoubleVariable extends Variable {
      * {@inheritDoc}
      */
     public void checkVariable(String value, Scope currentScope) throws BadVariableException {
-        if (!isVariableAssignmentValid(value)) {
+        if (!isVariableAssignmentValid(value, currentScope)) {
             if (value.trim().matches(MATCH_DOUBLE)) {
                 return;
             } else {
