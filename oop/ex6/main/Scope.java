@@ -3,7 +3,6 @@ package oop.ex6.main;
 import oop.ex6.main.variables.Variable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 
 /**
@@ -50,7 +49,7 @@ public class Scope {
             }
             try {
                 Variable currentScopeVariable = variablesIterator.next();
-                currentScopeVariable.checkVariable(listOfArguments[i]);
+                currentScopeVariable.checkVariable(listOfArguments[i], );
             }
             catch (BadVariableException e) {
                 throw new BadCodeException(
@@ -103,7 +102,7 @@ public class Scope {
      * @param name: a name to search
      * @return : true if the name exists, false otherwise.
      */
-    public boolean searchForNameInVaraiblesList(String name) {
+    public boolean searchForNameInVariablesList(String name) {
         for (Variable variable : variablesArray) {
             if (variable.getName().equals(name)) {
                 return true;

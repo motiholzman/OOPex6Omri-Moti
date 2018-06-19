@@ -23,7 +23,7 @@ public class IfWhile extends Scope {
         BooleanVariable booleanVariable = new BooleanVariable
                 ("boolChecker","true",false,true,this);
         for(String param:listOfArguments){
-            booleanVariable.checkVariable(param.trim());
+            booleanVariable.checkVariable(param.trim(), );
         }
 
     }

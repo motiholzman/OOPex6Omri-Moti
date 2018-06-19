@@ -293,7 +293,7 @@ public class FileParser {
                     if (var == null || var.getFinal()) {
                         throw new BadCodeException("Error: cannot assign to this variable variable");
                     }
-                    var.checkVariable(value.trim());
+                    var.checkVariable(value.trim(), );
                 }
                 line =  fileLines.pop();
             }

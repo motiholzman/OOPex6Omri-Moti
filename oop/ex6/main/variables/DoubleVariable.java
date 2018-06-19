@@ -31,7 +31,7 @@ public class DoubleVariable extends Variable {
     /**
      * {@inheritDoc}
      */
-    public void checkVariable(String value) throws BadVariableException {
+    public void checkVariable(String value, Scope currentScope) throws BadVariableException {
         if (!isVariableAssignmentValid(value)) {
             if (value.trim().matches(MATCH_DOUBLE)) {
                 return;

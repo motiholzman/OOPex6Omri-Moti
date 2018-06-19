@@ -35,7 +35,7 @@ public class BooleanVariable extends  Variable {
      * this method checks whether the input for the variable is on of the following: true, false or any
      * number otherwise throws an exception.
      */
-    public  void checkVariable(String value) throws BadVariableException {
+    public  void checkVariable(String value, Scope currentScope) throws BadVariableException {
         if (!isVariableAssignmentValid(value)) {
             if (value.trim().matches(MATCH_BOOLEAN)) {
                 return;

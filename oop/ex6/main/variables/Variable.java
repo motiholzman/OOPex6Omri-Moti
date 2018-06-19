@@ -49,7 +49,7 @@ public abstract class Variable {
         try{
             checkName(name);
             if(isInitialize) {
-                checkVariable(value);
+                checkVariable(value, this.variableScope);
                 this.value = value;
             }
         }
@@ -62,26 +62,29 @@ public abstract class Variable {
 
     /**
      * this method checks if the variable is initialize correctly according to it's definitions.
-     * @param value : the variable assignment value.
-     * @throws BadVariableException : to indicates whether a problem detected.
+     * @param value : a value to assign.
+     * @param currentScope : the scope we work in. to find out if the is a variable who's name is "value".
+     * @throws BadVariableException: in case there was a problem in the initialization.
      */
-    public abstract void checkVariable(String value) throws BadVariableException;
+    public abstract void checkVariable(String value, Scope currentScope) throws BadVariableException;
 
     /**
      * this method checks if there is a variable with the given name in this scope or some other scope, and
      * whether this assignment is legal: the type of the variables are match, and the assigned variable is
      * initialize.
      * @param variableName : a given name for search.
+     * @param currentScope : the scope to search in.
      * @return : true if the assignment is legal, false if the variable wasn't found.
      * @throws BadVariableException: in case that the assignment isn't legal.
      */
-    protected boolean isVariableAssignmentValid(String variableName) throws BadVariableException {
+    protected boolean isVariableAssignmentValid(String variableName, Scope currentScope) throws
+            BadVariableException {
         Variable otherVariable = variableScope.getVariable(variableName);
         if (otherVariable == null) {
             return false;
         }
         if ((otherVariable.isInitialize)) {
-            checkVariable(otherVariable.value);
+            checkVariable(otherVariable.value, );
             return true;
         }
         throw new BadVariableException();
@@ -96,7 +99,7 @@ public abstract class Variable {
      * @throws BadVariableException - if the name of the variable isnt legal
      */
     private void checkName(String name) throws IllegalCodeException {
-        if (variableScope.searchForNameInVaraiblesList(name)) {
+        if (variableScope.searchForNameInVariablesList(name)) {
             throw new BadCodeException("Error: two arguments with same name in the same scope.");
         }
         if(name.trim().matches(MATCH_NAME)) {

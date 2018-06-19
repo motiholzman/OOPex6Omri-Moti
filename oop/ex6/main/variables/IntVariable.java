@@ -30,10 +30,10 @@ public class IntVariable extends Variable {
 
     /**
      * {@inheritDoc}
-     * this method checks that the given value is an integer.
+     * this method checks that the given value is an illegal assignment to integer.
      */
-    public void checkVariable(String value) throws BadVariableException {
-        if(!isVariableAssignmentValid(value)) {
+    public void checkVariable(String value, Scope currentScope) throws BadVariableException {
+        if(!isVariableAssignmentValid(value, currentScope)) {
             if (value.trim().matches(MATCH_INT)) {
                 return;
             } else {
