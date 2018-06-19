@@ -10,7 +10,7 @@ import oop.ex6.main.Scope;
  */
 public class StringVariable extends Variable {
 
-
+    /*this string is a regex that recognize string variable */
     private static final String MATCH_STRING = "\"[^>]*\"";
 
     /**
@@ -45,11 +45,4 @@ public class StringVariable extends Variable {
         }
     }
 
-//    @Override
-//    /**
-//     * {@inheritDoc}
-//     */
-//    public Variable copyValue(Variable variable) {
-//        return null;
-//    }
 }

@@ -10,7 +10,9 @@ import oop.ex6.main.Scope;
  */
 public class BooleanVariable extends  Variable {
 
+    /*this string is a regex that recognize doable variable */
     private static final String MATCH_DOUBLE = "(-?(\\d)+([.](\\d*))?)";
+    /*this string is a regex that recognize boolean variable */
     private static final String MATCH_BOOLEAN = "true|false|"+ MATCH_DOUBLE;
 
     /**
@@ -43,8 +45,5 @@ public class BooleanVariable extends  Variable {
         }
     }
 
-//    @Override
-//    public Variable copyValue(Variable variable) {
-//        return null;
-//    }
+
 }
