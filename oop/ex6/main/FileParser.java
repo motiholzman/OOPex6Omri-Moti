@@ -22,7 +22,7 @@ public class FileParser {
 
     public static final String COMMA = ",", EQUAL = "=";
 
-    private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
+    private final String MATCH_NAME = "([a-zA-Z]\\w*|_\\w+)";
 
    // "(final\\s+)?(int|double|char|String|boolean)\\s+([^>]*?)\\s*(=\\s*([^>]*))?;";
 
@@ -319,18 +319,20 @@ public class FileParser {
             if (genericMatcher.matches()) {
                 matchFlag = true;
                 if (!currentScope.getName().equals("main")) {
-                    String[] variableList = line.split(COMMA),variables;
-                    String assignToVariable,value;
+                    String[] variableList = line.split(COMMA);
+                    String assignToVariable, value;
                     Variable var;
                     for (String assignment : variableList) {
-                        variables = assignment.split(EQUAL);
-                        assignToVariable = variables[0];
-                        value = variables[1];
-                        var = currentScope.getVariable(assignToVariable.trim(), currentScope);
-                        if (var == null || var.getFinal()) {
-                            throw new BadCodeException("Error: cannot assign to this variable");
+                        genericMatcher = VariableSecconderyPattern.matcher(assignment.trim());
+                        if (genericMatcher.matches()) {
+                            assignToVariable = genericMatcher.group(1).trim();
+                            value = genericMatcher.group(3);
+                            var = currentScope.getVariable(assignToVariable.trim(), currentScope);
+                            if (var == null || var.getFinal()) {
+                                throw new BadCodeException("Error: cannot assign to this variable");
+                            }
+                            var.checkAndAssignVariable(value.trim(), currentScope);
                         }
-                        var.checkAndAssignVariable(value.trim(), currentScope);
                     }
                 }
             }
