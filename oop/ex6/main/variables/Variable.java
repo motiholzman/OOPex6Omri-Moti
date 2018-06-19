@@ -20,8 +20,8 @@ public abstract class Variable {
     /** the Variable's value*/
     protected String value;
 
-    /* indicates whether the variable is initialize.*/
-    private Boolean isInitialize;
+    /** indicates whether the variable is initialize.*/
+    protected Boolean isInitialize;
 
     /* indicates whether the variable is consider final.*/
     private Boolean isFinal;
@@ -49,7 +49,7 @@ public abstract class Variable {
         try{
             checkName(name);
             if(isInitialize) {
-                checkVariable(value, this.variableScope);
+                checkAndAssignVariable(value, this.variableScope);
             }
         }
         catch (BadVariableException e) {
@@ -65,7 +65,7 @@ public abstract class Variable {
      * @param currentScope : the scope we work in. to find out if the is a variable who's name is "value".
      * @throws BadVariableException: in case there was a problem in the initialization.
      */
-    public abstract void checkVariable(String value, Scope currentScope) throws BadVariableException;
+    public abstract void checkAndAssignVariable(String value, Scope currentScope) throws BadVariableException;
 
     /**
      * this method checks if there is a variable with the given name in this scope or some other scope, and
@@ -83,7 +83,7 @@ public abstract class Variable {
             return null;
         }
         if ((otherVariable.isInitialize)) {
-            checkVariable(otherVariable.value, currentScope);
+            checkAndAssignVariable(otherVariable.value, currentScope);
             return otherVariable;
         }
         throw new BadVariableException();

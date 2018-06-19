@@ -57,7 +57,7 @@ public class Scope {
             }
             try {
                 Variable currentScopeVariable = variablesIterator.next();
-                currentScopeVariable.checkVariable(listOfArguments[i], currentScope);
+                currentScopeVariable.checkAndAssignVariable(listOfArguments[i], currentScope);
             }
             catch (BadVariableException e) {
                 throw new BadCodeException(

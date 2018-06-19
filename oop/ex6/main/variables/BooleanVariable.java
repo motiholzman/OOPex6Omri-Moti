@@ -35,12 +35,13 @@ public class BooleanVariable extends  Variable {
      * this method checks whether the input for the variable is on of the following: true, false or any
      * number otherwise throws an exception.
      */
-    public  void checkVariable(String value, Scope currentScope) throws BadVariableException {
+    public  void checkAndAssignVariable(String value, Scope currentScope) throws BadVariableException {
         Variable otherVariable = (isVariableAssignmentValid(value, currentScope));
         if (otherVariable == null)
         {
             if (value.trim().matches(MATCH_BOOLEAN)) {
                 this.value = value;
+                this.isInitialize = true;
                 return;
             } else {
                 throw new BadVariableException();
@@ -48,6 +49,7 @@ public class BooleanVariable extends  Variable {
         }
         else {
             this.value = otherVariable.value;
+            this.isInitialize = true;
         }
     }
 

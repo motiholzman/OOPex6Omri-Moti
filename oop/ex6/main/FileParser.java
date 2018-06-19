@@ -76,8 +76,8 @@ public class FileParser {
 
     private final Pattern returnPattern = Pattern.compile(MATCH_RETURN);
 
-    private final String MATCH_ASSIGN = MATCH_NAME + "\\s*=\\s*" + MATCH_NAME + "(," +
-            "\\s*" + MATCH_NAME + "\\s*=\\s*" + MATCH_NAME + ")*;";
+    private final String MATCH_ASSIGN =
+            MATCH_NAME + "\\s*=\\s*[^,=}>]+(," + "\\s*" + MATCH_NAME + "\\s*=\\s*[^,=}>]+)*;";
 
     private final Pattern assignPattern = Pattern.compile(MATCH_ASSIGN);
 
@@ -144,18 +144,19 @@ public class FileParser {
             genericMatcher = assignPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 variableList = line.split(COMMA);
-                String [] variables;
                 String assignToVariable,value;
                 Variable var;
                 for (String assignment : variableList) {
-                    variables = assignment.split(EQUAL);
-                    assignToVariable = variables[0];
-                    value = variables[1];
-                    var = mainScope.getVariable(assignToVariable.trim(), mainScope);
-                    if (var == null || var.getFinal()) {
-                        throw new BadCodeException("Error: cannot assign to this variable");
+                    genericMatcher = VariableSecconderyPattern.matcher(assignment.trim());
+                    if(genericMatcher.matches()) {
+                        assignToVariable = genericMatcher.group(1).trim();
+                        value = genericMatcher.group(3);
+                        var = mainScope.getVariable(assignToVariable.trim(), mainScope);
+                        if (var == null || var.getFinal()) {
+                            throw new BadCodeException("Error: cannot assign to this variable");
+                        }
+                        var.checkAndAssignVariable(value.trim(), mainScope);
                     }
-                    var.checkVariable(value.trim(), mainScope);
                 }
             }
             scopeMatcher = ScopePattern.matcher(line.trim());
@@ -329,7 +330,7 @@ public class FileParser {
                         if (var == null || var.getFinal()) {
                             throw new BadCodeException("Error: cannot assign to this variable");
                         }
-                        var.checkVariable(value.trim(), currentScope);
+                        var.checkAndAssignVariable(value.trim(), currentScope);
                     }
                 }
             }

@@ -31,12 +31,13 @@ public class DoubleVariable extends Variable {
     /**
      * {@inheritDoc}
      */
-    public void checkVariable(String value, Scope currentScope) throws BadVariableException {
+    public void checkAndAssignVariable(String value, Scope currentScope) throws BadVariableException {
         Variable otherVariable = (isVariableAssignmentValid(value, currentScope));
         if (otherVariable == null)
         {
             if (value.trim().matches(MATCH_DOUBLE)) {
                 this.value = value;
+                this.isInitialize = true;
                 return;
             } else {
                 throw new BadVariableException();
@@ -44,6 +45,7 @@ public class DoubleVariable extends Variable {
         }
         else {
             this.value = otherVariable.value;
+            this.isInitialize = true;
         }
     }
 
