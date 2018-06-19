@@ -10,6 +10,7 @@ import oop.ex6.main.Scope;
  */
 public class CharVariable extends Variable {
 
+    /*this string is a regex that recognize char variable */
     private static final String MATCH_CHAR = "\'.\'";
 
     /**
@@ -38,8 +39,5 @@ public class CharVariable extends Variable {
         }
     }
 
-//    @Override
-//    public Variable copyValue(Variable variable) {
-//        return null;
-//    }
+
 }

@@ -10,6 +10,7 @@ import oop.ex6.main.Scope;
  */
 public class IntVariable extends Variable {
 
+    /*this string is a regex that recognize int variable */
     private static final String MATCH_INT = "-?\\d+";
 
     /**
@@ -41,8 +42,4 @@ public class IntVariable extends Variable {
         }
     }
 
-//    @Override
-//    public Variable copyValue(Variable variable) {
-//        return null;
-//    }
 }

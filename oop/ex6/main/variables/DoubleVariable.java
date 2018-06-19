@@ -10,7 +10,7 @@ import oop.ex6.main.Scope;
  */
 public class DoubleVariable extends Variable {
 
-
+    /*this string is a regex that recognize doable variable */
     private static final String MATCH_DOUBLE = "-?(\\d)+([.](\\d*))?";
 
     /**
@@ -41,8 +41,4 @@ public class DoubleVariable extends Variable {
         }
     }
 
-//    @Override
-//    public Variable copyValue(Variable variable) {
-//        return null;
-//    }
 }

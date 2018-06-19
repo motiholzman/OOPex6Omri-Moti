@@ -57,15 +57,7 @@ public abstract class Variable {
             throw new IllegalCodeException();
         }
     }
-
-//    /**
-//     * a function that receives a String and checks whether the given type is equal to the variable's type.
-//     * @param type: a type to compare.
-//     * @return : true if it matches, false otherwise.
-//     */
-//    public Boolean variableTypeMatch(String type) {
-//        return this.type.equals(type);
-//    }
+    
 
 
     /**
