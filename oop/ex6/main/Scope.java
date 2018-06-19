@@ -45,7 +45,7 @@ public class Scope {
         Iterator<Variable> variablesIterator = variablesArray.iterator();
         for (int i = 0; i < listOfArguments.length; i++) {
             if (!variablesIterator.hasNext() || i > this.numberOfArgsInSignature) {
-                // if we got more variables in the function call or we got less variables in the scope at all
+                // if we got more variables in the function's call or less variables in the scope at all
                 throw new BadCodeException("Error: too many arguments were given to the method.");
             }
             try {

@@ -246,7 +246,7 @@ public class FileParser {
     }
 
     /**
-     * the main method of FilePearser it will parse the file and check for illegal coding lines if it find
+     * the main method of FileParser it will parse the file and check for illegal coding lines if it find
      * one it will throw exception
      * @throws IllegalCodeException - if the code is illegal
      * @throws IOException - if there is a problem with the file reading
