@@ -57,7 +57,7 @@ public abstract class Variable {
             throw new IllegalCodeException();
         }
     }
-    
+
 
 
     /**
