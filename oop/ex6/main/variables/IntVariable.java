@@ -1,5 +1,6 @@
 package oop.ex6.main.variables;
 
+import oop.ex6.main.BadCodeException;
 import oop.ex6.main.BadVariableException;
 import oop.ex6.main.IllegalCodeException;
 import oop.ex6.main.Scope;
@@ -33,12 +34,21 @@ public class IntVariable extends Variable {
      * this method checks that the given value is an illegal assignment to integer.
      */
     public void checkVariable(String value, Scope currentScope) throws BadVariableException {
-        if(!isVariableAssignmentValid(value, currentScope)) {
+        Variable otherVariable = (isVariableAssignmentValid(value, currentScope));
+        if (otherVariable == null)
+        {
             if (value.trim().matches(MATCH_INT)) {
+                this.value = value;
                 return;
             } else {
                 throw new BadVariableException();
             }
+        }
+        else if (!otherVariable.type.equals("double")) {
+            this.value = otherVariable.value;
+        }
+        else {
+            throw new BadVariableException();
         }
     }
 

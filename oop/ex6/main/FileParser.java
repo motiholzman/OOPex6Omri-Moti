@@ -254,9 +254,8 @@ public class FileParser {
      */
     public void fileProcess() throws IllegalCodeException, IOException {
         Scope currentScope = preProcessFile();
-        String line;
-        line = fileLines.pop();
-        Boolean retuenMustApear = false;
+        String line = fileLines.pop();
+        Boolean returnMustAppear = false;
         while (line != null){
             boolean matchFlag = false;
             genericMatcher = emptyLinePattern.matcher(line.trim());
@@ -267,7 +266,7 @@ public class FileParser {
             if (genericMatcher.matches()) {
                 matchFlag = true;
                 if (!currentScope.getName().equals("main")) {
-                    // if the current scope isnt main we need to know those variables
+                    // if the current scope isn't main we need to know those variables
                     String[] variableList = line.split(COMMA);
                     createNewVariable(currentScope, variableList);
                 }
@@ -275,7 +274,7 @@ public class FileParser {
             genericMatcher = ScopePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 matchFlag = true;
-                retuenMustApear = true;
+                returnMustAppear = true;
                 String scopeName = genericMatcher.group(1);
                 currentScope = bringScope(scopeName);
             }
@@ -284,7 +283,7 @@ public class FileParser {
                 if (currentScope.getOuterScope() == null) {
                     throw new BadCodeException("Error: there are two many closing parentheses");
                 }
-                if (currentScope.getOuterScope().getName().equals("main") && retuenMustApear){
+                if (currentScope.getOuterScope().getName().equals("main") && returnMustAppear){
                     throw new BadCodeException("Error: no return appears before parentheses.");
                 }
                 matchFlag = true;
@@ -293,18 +292,22 @@ public class FileParser {
             genericMatcher = assignPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 matchFlag = true;
-                String[] variableList = line.split(COMMA);
-                for (String assigment : variableList) {
-                    String[] variables = assigment.split(EQUAL);
-                    String variable1 = variables[0];
-                    String value = variables[1];
-                    Variable var = currentScope.getVariable(variable1.trim(), currentScope);
-                    if (var == null || var.getFinal()) {
-                        throw new BadCodeException("Error: cannot assign to this variable variable");
+                if (!currentScope.getName().equals("main")) {
+                    String[] variableList = line.split(COMMA),variables;
+                    String assignToVariable,value;
+                    Variable var;
+                    for (String assignment : variableList) {
+                        variables = assignment.split(EQUAL);
+                        assignToVariable = variables[0];
+                        value = variables[1];
+                        var = currentScope.getVariable(assignToVariable.trim(), currentScope);
+                        if (var == null || var.getFinal()) {
+                            throw new BadCodeException("Error: cannot assign to this variable");
+                        }
+                        var.checkVariable(value.trim(), currentScope);
                     }
-                    var.checkVariable(value.trim(), currentScope);
                 }
-                line =  fileLines.pop();
+//                line =  fileLines.pop();
             }
             genericMatcher = ifWhilePattern.matcher(line.trim());
             if(genericMatcher.matches()){
@@ -330,7 +333,7 @@ public class FileParser {
                 genericMatcher = closeParenthesesPattern.matcher(line.trim());
                 if (genericMatcher.matches()) {
                     if(currentScope.getOuterScope().getName().equals("main")) {
-                        retuenMustApear = false;
+                        returnMustAppear = false;
                     }
                     currentScope = currentScope.getOuterScope();
                 }

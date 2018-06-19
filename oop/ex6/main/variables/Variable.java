@@ -17,8 +17,8 @@ public abstract class Variable {
     /* the Variable's name*/
     private String name;
 
-    /* the Variable's value*/
-    private String value;
+    /** the Variable's value*/
+    protected String value;
 
     /* indicates whether the variable is initialize.*/
     private Boolean isInitialize;
@@ -50,7 +50,6 @@ public abstract class Variable {
             checkName(name);
             if(isInitialize) {
                 checkVariable(value, this.variableScope);
-                this.value = value;
             }
         }
         catch (BadVariableException e) {
@@ -77,15 +76,15 @@ public abstract class Variable {
      * @return : true if the assignment is legal, false if the variable wasn't found.
      * @throws BadVariableException: in case that the assignment isn't legal.
      */
-    protected boolean isVariableAssignmentValid(String variableName, Scope currentScope) throws
+    protected Variable isVariableAssignmentValid(String variableName, Scope currentScope) throws
             BadVariableException {
         Variable otherVariable = variableScope.getVariable(variableName, currentScope);
         if (otherVariable == null) {
-            return false;
+            return null;
         }
         if ((otherVariable.isInitialize)) {
             checkVariable(otherVariable.value, currentScope);
-            return true;
+            return otherVariable;
         }
         throw new BadVariableException();
     }

@@ -30,12 +30,18 @@ public class CharVariable extends Variable {
 
     /** {@inheritDoc} */
     public void checkVariable(String value, Scope currentScope) throws BadVariableException {
-        if(!isVariableAssignmentValid(value, currentScope)) {
+        Variable otherVariable = (isVariableAssignmentValid(value, currentScope));
+        if (otherVariable == null)
+        {
             if (value.trim().matches(MATCH_CHAR)) {
+                this.value = value;
                 return;
             } else {
                 throw new BadVariableException();
             }
+        }
+        else {
+            this.value = otherVariable.value;
         }
     }
 

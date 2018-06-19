@@ -34,15 +34,20 @@ public class StringVariable extends Variable {
      * we have no constraints on this value.
      */
     public void checkVariable(String value, Scope currentScope) throws BadVariableException {
-        if(!isVariableAssignmentValid(value, currentScope)) { // a variable with this name wasn't found - check if this a
-            //value assignment.
-            if(value.trim().matches(MATCH_STRING)){
+        Variable otherVariable = (isVariableAssignmentValid(value, currentScope));
+        if (otherVariable == null)
+        {
+            if (value.trim().matches(MATCH_STRING)) {
+                this.value = value;
                 return;
-            }
-            else {
+            } else {
                 throw new BadVariableException();
             }
         }
+        else {
+            this.value = otherVariable.value;
+        }
+
     }
 
 }
