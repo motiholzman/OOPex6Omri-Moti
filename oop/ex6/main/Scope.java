@@ -41,16 +41,20 @@ public class Scope {
      * @throws IllegalCodeException: in case the arguments doesn't correspond to the function signature.
      * */
     public void checkSignature(String [] listOfArguments) throws IllegalCodeException {
+        // this is an iterator of the variables of the scopes.
         Iterator<Variable> variablesIterator = variablesArray.iterator();
-        for (String currentArg: listOfArguments) {
-            if (!variablesIterator.hasNext()) {
+        for (int i = 0; i < listOfArguments.length; i++) {
+            if (!variablesIterator.hasNext() || i > this.numberOfArgsInSignature) {
+                // if we got more variables in the function call or we got less variables in the scope at all
                 throw new BadCodeException("Error: too many arguments were given to the method.");
             }
             try {
-            variablesIterator.next().checkVariable(currentArg);
+                Variable currentScopeVariable = variablesIterator.next();
+                currentScopeVariable.checkVariable(listOfArguments[i]);
             }
             catch (BadVariableException e) {
-                throw new BadCodeException("Error: the arguments doesn't correspond to the function signature");
+                throw new BadCodeException(
+                        "Error: the arguments doesn't correspond to the function signature");
             }
         }
     }
