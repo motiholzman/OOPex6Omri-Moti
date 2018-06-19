@@ -167,7 +167,8 @@ public class FileParser {
         String args = scopeMatcher.group(2);
         if(args != null) {
             String[] parametersList = scopeMatcher.group(2).split(COMMA);
-            scope.setNumberOfArgsInSignature(parametersList.length);
+            scope.setNumberOfArgsInSignature(
+                    parametersList[0].equals(FileParser.EMPTY_STRING) ? 0 : parametersList.length);
             for (String typeValueString : parametersList) {
                 Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString.trim());
                 if (typeParamMatcher.matches()) {
@@ -255,6 +256,7 @@ public class FileParser {
         Scope currentScope = preProcessFile();
         String line;
         line = fileLines.pop();
+        Boolean retuenMustApear = false;
         while (line != null){
             boolean matchFlag = false;
             genericMatcher = emptyLinePattern.matcher(line.trim());
@@ -273,11 +275,18 @@ public class FileParser {
             genericMatcher = ScopePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 matchFlag = true;
+                retuenMustApear = true;
                 String scopeName = genericMatcher.group(1);
                 currentScope = bringScope(scopeName);
             }
             genericMatcher = closeParenthesesPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
+                if (currentScope.getOuterScope() == null) {
+                    throw new BadCodeException("Error: there are two many closing parentheses");
+                }
+                if (currentScope.getOuterScope().getName().equals("main") && retuenMustApear){
+                    throw new BadCodeException("Error: no return appears before parentheses.");
+                }
                 matchFlag = true;
                 currentScope = currentScope.getOuterScope();
             }
@@ -320,7 +329,14 @@ public class FileParser {
                 }
                 genericMatcher = closeParenthesesPattern.matcher(line.trim());
                 if (genericMatcher.matches()) {
+                    if(currentScope.getOuterScope().getName().equals("main")) {
+                        retuenMustApear = false;
+                    }
                     currentScope = currentScope.getOuterScope();
+                }
+                else {
+                    //so we wont pop another line
+                    continue;
                 }
             }
             genericMatcher = funcCallPattern.matcher(line.trim());

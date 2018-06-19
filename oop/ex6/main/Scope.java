@@ -22,6 +22,9 @@ public class Scope {
     /* the number of args this scope receives in the signature. */
     private int numberOfArgsInSignature;
 
+    /* represents the empty string */
+    private static final String EMPTY_STRING = "";
+
 
     /**
      * this constructor initialize the object.
@@ -37,12 +40,16 @@ public class Scope {
      * this method checks if the scope's signature is correspond to the arguments that appears in the
      * calling to the function.
      * @param listOfArguments : the arguments that was gave to the function when it was called.
-     * @param currentScope
+     * @param currentScope : the current scope to search the variable in.
      * @throws IllegalCodeException: in case the arguments doesn't correspond to the function signature.
      * */
     public void checkSignature(String[] listOfArguments, Scope currentScope) throws IllegalCodeException {
         // this is an iterator of the variables of the scopes.
         Iterator<Variable> variablesIterator = variablesArray.iterator();
+        if (!variablesIterator.hasNext() && listOfArguments.length > 0 &&
+                listOfArguments[0].equals(Scope.EMPTY_STRING)) {
+            return;
+        }
         for (int i = 0; i < listOfArguments.length; i++) {
             if (!variablesIterator.hasNext() || i > this.numberOfArgsInSignature) {
                 // if we got more variables in the function's call or less variables in the scope at all
