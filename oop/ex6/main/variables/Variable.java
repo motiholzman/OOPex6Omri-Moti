@@ -51,6 +51,9 @@ public abstract class Variable {
             if(isInitialize) {
                 checkAndAssignVariable(value, this.variableScope);
             }
+            if(this.isFinal && ! this.isInitialize){
+                throw new BadVariableException();
+            }
         }
         catch (BadVariableException e) {
             throw new IllegalCodeException();
