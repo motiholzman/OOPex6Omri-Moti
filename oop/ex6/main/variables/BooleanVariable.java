@@ -26,6 +26,9 @@ public class BooleanVariable extends  Variable {
     public BooleanVariable(String name, String value, Boolean isFinal, Boolean isInitialize,
                            Scope currentScope) throws IllegalCodeException{
         super(name, value, isFinal, isInitialize, currentScope);
+        if(this.isInitialize && value == null){
+            this.value = "false";
+        }
         type = "Boolean";
     }
 

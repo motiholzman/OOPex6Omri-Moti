@@ -24,6 +24,9 @@ public class IntVariable extends Variable {
     public IntVariable(String name, String value, Boolean isFinal, Boolean isInitialize, Scope currentScope)
             throws IllegalCodeException {
         super(name, value, isFinal,isInitialize, currentScope);
+        if(this.isInitialize && value == null){
+            this.value = "0";
+        }
         this.type = "int";
     }
 

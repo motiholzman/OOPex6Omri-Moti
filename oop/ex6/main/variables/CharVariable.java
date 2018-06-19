@@ -24,6 +24,9 @@ public class CharVariable extends Variable {
     public CharVariable(String name, String value, Boolean isFinal, Boolean isInitialize, Scope currentScope)
             throws IllegalCodeException {
         super(name,value,isFinal, isInitialize, currentScope);
+        if(this.isInitialize && value == null){
+            this.value = "\'\'";
+        }
         type = "Char";
     }
 

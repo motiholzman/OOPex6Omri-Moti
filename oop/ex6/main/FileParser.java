@@ -197,7 +197,7 @@ public class FileParser {
                     String type = typeParamMatcher.group(2);
                     String variableName = typeParamMatcher.group(3);
                     VariablesFactory.createVariable(type, variableFinal, variableName, null,
-                            scope, false);
+                            scope, true);
                 }
                 else if ( typeValueString.equals(FileParser.EMPTY_STRING)&& parametersList.length > 1){
                     throw new BadCodeException("Error: Illegal name of argument.");

@@ -25,6 +25,9 @@ public class StringVariable extends Variable {
                           Scope currentScope)
             throws IllegalCodeException {
         super(name,value, isFinal, isInitialize, currentScope);
+        if(this.isInitialize && value == null){
+            this.value = "\"\"";
+        }
         type = "String";
     }
 

@@ -49,7 +49,9 @@ public abstract class Variable {
         try{
             checkName(name);
             if(isInitialize) {
-                checkAndAssignVariable(value, this.variableScope);
+                if(value != null) {
+                    checkAndAssignVariable(value, this.variableScope);
+                }
             }
             if(this.isFinal && ! this.isInitialize){
                 throw new BadVariableException();
