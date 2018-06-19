@@ -20,7 +20,7 @@ public class FileParser {
     /* a private buffer to rad a file with.*/
     private BufferedReader inputBuffer;
 
-    public static final String INT = "int", DOUBLE = "double", STRING = "String", FINAL = "final", BOOLEAN = "boolean", CHAR = "char", COMMA = ",", EQUAL = "=", SPACE = "\\s+", RETURN = "return;"; //TODO check for unused.
+    public static final String COMMA = ",", EQUAL = "=";
 
     private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
 
@@ -119,7 +119,7 @@ public class FileParser {
     }
 
 
-    /*
+    /**
      * this method pre process the file in order to get its methods and global variables
      * @return Scope the main scope
      * @throws IllegalCodeException - if there is a problem with the variables or the methods
@@ -133,10 +133,10 @@ public class FileParser {
         String[] variableList;
         while (line != null) {
             // finding global variables
-            variableList = line.split(",");
+            variableList = line.split(COMMA);
             genericMatcher = VariablePattern.matcher(variableList[0].trim());
             if (genericMatcher.matches()) {
-                createGlobalVariable(mainScope, variableList);
+                createNewVariable(mainScope, variableList);
             }
             scopeMatcher = ScopePattern.matcher(line.trim());
             if (scopeMatcher.matches()) {
@@ -153,20 +153,20 @@ public class FileParser {
     /**
      * this method handles a new scope and create its signature
      * @param bracket - a Stack that holds the number of bracket to check if its legal
-     * @param mainScope - the main scope of the function
+     * @param otherScope - the main scope of the function
      * @throws IllegalCodeException-if there is a problem with the variables or the methods
      * @throws IOException - if there is a problem with the buffer reader of the file
      */
-    private String handleNewScope(Stack<String> bracket, Scope mainScope) throws IllegalCodeException,
+    private String handleNewScope(Stack<String> bracket, Scope otherScope) throws IllegalCodeException,
             IOException {
         String line;
         bracket.push("{");//add bracket to the stack because we opened new scope
         // this is passable new scope and we need to advance the line to the end of the scope
         String scopeName = scopeMatcher.group(1);
-        Scope scope = new Scope(mainScope, scopeName);
+        Scope scope = new Scope(otherScope, scopeName);
         String args = scopeMatcher.group(2);
         if(args != null) {
-            String[] parametersList = scopeMatcher.group(2).split(",");
+            String[] parametersList = scopeMatcher.group(2).split(COMMA);
             scope.setNumberOfArgsInSignature(parametersList.length);
             for (String typeValueString : parametersList) {
                 Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString.trim());
@@ -208,24 +208,24 @@ public class FileParser {
 
     /**
      * this method create and add a new variable to the global variables list
-     * @param mainScope - the main scope of the function
+     * @param currentScope - the main scope of the function
      * @param variableList - a list of variables to add
      * @throws IllegalCodeException - if a variable assignment isnt legal
      */
-    private void createGlobalVariable(Scope mainScope, String[] variableList) throws IllegalCodeException {
+    private void createNewVariable(Scope currentScope, String[] variableList) throws IllegalCodeException {
         String type = genericMatcher.group(2);
         Boolean variableFinal =  genericMatcher.group(1) != null;
         String variableName = genericMatcher.group(3);
         String variableValue = genericMatcher.group(5);
         Boolean variableInitiated = variableList[0].contains(EQUAL);
-        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
+        VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, currentScope,
                 variableInitiated);
         for (int index = 1; index < variableList.length; index++) {
             variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
             variableName = variableMatcher.group(3);
             variableValue = variableMatcher.group(5);
             variableInitiated = variableList[index].contains(EQUAL);
-            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
+            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, currentScope,
                     variableInitiated);
         }
     }
@@ -266,8 +266,8 @@ public class FileParser {
                 matchFlag = true;
                 if (!currentScope.getName().equals("main")) {
                     // if the current scope isnt main we need to know those variables
-                    String[] variableList = line.split(",");
-                    createGlobalVariable(currentScope, variableList);
+                    String[] variableList = line.split(COMMA);
+                    createNewVariable(currentScope, variableList);
                 }
             }
             genericMatcher = ScopePattern.matcher(line.trim());
@@ -284,9 +284,9 @@ public class FileParser {
             genericMatcher = assignPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 matchFlag = true;
-                String[] variableList = line.split(",");
+                String[] variableList = line.split(COMMA);
                 for (String assigment : variableList) {
-                    String[] variables = assigment.split("=");
+                    String[] variables = assigment.split(EQUAL);
                     String variable1 = variables[0];
                     String value = variables[1];
                     Variable var = currentScope.getVariable(variable1.trim());
@@ -328,7 +328,7 @@ public class FileParser {
                 matchFlag = true;
                 checkForUnsupportedMainOperation(currentScope);
                 Scope functionScope = bringScope(genericMatcher.group(1));
-                String [] parametersList = genericMatcher.group(2).split(",");
+                String [] parametersList = genericMatcher.group(2).split(COMMA);
                 functionScope.checkSignature(parametersList);
             }
             if(!matchFlag) {
