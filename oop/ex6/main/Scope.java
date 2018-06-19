@@ -12,13 +12,16 @@ import java.util.Iterator;
 public class Scope {
 
     /* the Scope's outer Scope. if it is null - this is the main Scope of the file. */
-    private Scope OuterScope;
+    private final Scope OuterScope;
 
     /* the Scope's variables. this ArrayList include only the Scope's local variables */
     private ArrayList<Variable> variablesArray;
 
     /* the Scope's name. */
-    private String name;
+    private final String name;
+
+    /* the number of args this scope receives in the signature. */
+    private int numberOfArgsInSignature;
 
 
     /**
@@ -103,5 +106,12 @@ public class Scope {
             }
         }
         return false;
+    }
+
+    /**
+     * @param numberOfArgsInSignature : set the number of args in the signature.
+     */
+    public void setNumberOfArgsInSignature(int numberOfArgsInSignature) {
+        this.numberOfArgsInSignature = numberOfArgsInSignature;
     }
 }
