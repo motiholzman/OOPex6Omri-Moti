@@ -303,7 +303,7 @@ public class FileParser {
                 matchFlag = true;
                 String scopeType = genericMatcher.group(1);
                 String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
-                currentScope = new IfWhile(currentScope,scopeType);
+                currentScope = new IfWhileScope(currentScope,scopeType);
                 currentScope.checkSignature(parameters);
             }
 			 genericMatcher = commentPattern.matcher(line);

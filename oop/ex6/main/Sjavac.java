@@ -26,12 +26,11 @@ public class Sjavac {
             FileParser parser  = null;
             try {
                 parser = new FileParser(filePath);
-                parser.fileProcess();// creating the first parse of the file so we know all the
-                // functions and global variables
-                //FIXME add here more logic.
+                parser.fileProcess();// will process the file and check if the code is legal
                 parser.closeParser();
                 System.out.println(Sjavac.LEGAL_CODE);
             }
+            // the code is illegal
             catch (IOException e) { // clean up
                 if (parser != null) {
                     parser.closeParser();
@@ -46,46 +45,6 @@ public class Sjavac {
             System.out.println(Sjavac.ILLEGAL_CODE);
         }
     }
-
-//    public int readFile() {
-//        try {
-//            File javaFile = new File(filePath);
-//            FileReader javaFileReader = new FileReader(javaFile);
-//            BufferedReader javaBufferReader = new BufferedReader(javaFileReader);
-//            // first parse
-//            String line;
-//            Pattern variable = Pattern.compile("");// TODO
-//            Pattern scope = Pattern.compile("");// TODO
-//            while ((line = (String)javaBufferReader.readLine()) != null) {
-//                Matcher variableMatch = variable.matcher(line);
-//                Matcher scopeMatch = scope.matcher(line);
-//                if(variableMatch.matches()){
-//                    //TODO check parameters and create variable
-//                }
-//                if(scopeMatch.matches()){
-//                    //TODO check parameters and create scope
-//                }
-//
-//
-//            }
-//                //closing the buffer
-//                javaBufferReader.close();
-//        } catch (FileNotFoundException e) {
-//            closeFile(javaBufferReader);
-//        } catch (IOException e) {
-//            closeFile(javaBufferReader);
-//
-//        }
-//
-//    }
-//
-//    private void closeFile(BufferedReader br) {
-//        try {
-//            br.close();
-//        } catch (IOException e) {
-//            return;
-//        }
-//    }
 
 }
 

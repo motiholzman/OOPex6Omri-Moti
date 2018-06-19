@@ -2,22 +2,24 @@ package oop.ex6.main;
 
 import oop.ex6.main.variables.BooleanVariable;
 
-public class IfWhile extends Scope {
+public class IfWhileScope extends Scope {
 
 
     /**
-     * this constructor initialize the object.
-     *
+     * this constructor initialize the if or while scope.
      * @param fatherScope : the outer scope of the constructed scope.
-     * @param name
+     * @param name - if or while
      */
-    public IfWhile(Scope fatherScope, String name) {
+    public IfWhileScope(Scope fatherScope, String name) {
         super(fatherScope, name);
     }
 
+
     /**
      * this method checks if the scope's signature is correspond to the arguments that appears in the
-     * calling to the function.
+     * calling to the function. which are booleans
+     * @param listOfArguments : the arguments that was gave to the function when it was called.
+     * @throws IllegalCodeException - if the arguments arent legal
      */
     public void checkSignature(String [] listOfArguments) throws IllegalCodeException {
         BooleanVariable booleanVariable = new BooleanVariable
