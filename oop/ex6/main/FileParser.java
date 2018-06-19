@@ -24,10 +24,13 @@ public class FileParser {
 
     private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
 
-    private final String MATCH_VARIABLE = "(final\\s+)?(int|double|char|String|boolean)\\s+([^>]*?)\\s*" +
-            "(=\\s*([^>]*))?;";
+   // "(final\\s+)?(int|double|char|String|boolean)\\s+([^>]*?)\\s*(=\\s*([^>]*))?;";
 
-    private final String MATCH_VARIABLE_SECCONDRY = "(\\w*)\\s*(=\\s*([^>]*))?";
+    private final String MATCH_VARIABLE =
+            "(final\\s+)?\\s*(int|double|char|String|boolean)\\s+([^,=}>]+)+\\s*((=\\s*([^,=}>]+))|(,\\s*" +
+                    "([^,=}>]+)+\\s*(=\\s*([^,=}>]+))?))*\\s*;";
+
+    private final String MATCH_VARIABLE_SECCONDRY = "([^=,};>]*?)\\s*(=\\s*([^=,};>]*?))?;?";
 
     private final String MATCH_BRACKET = "(if|while|void)\\s*[^\\{\\}]*\\{";
 
@@ -134,9 +137,26 @@ public class FileParser {
         while (line != null) {
             // finding global variables
             variableList = line.split(COMMA);
-            genericMatcher = VariablePattern.matcher(variableList[0].trim());
+            genericMatcher = VariablePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 createNewVariable(mainScope, variableList);
+            }
+            genericMatcher = assignPattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                variableList = line.split(COMMA);
+                String [] variables;
+                String assignToVariable,value;
+                Variable var;
+                for (String assignment : variableList) {
+                    variables = assignment.split(EQUAL);
+                    assignToVariable = variables[0];
+                    value = variables[1];
+                    var = mainScope.getVariable(assignToVariable.trim(), mainScope);
+                    if (var == null || var.getFinal()) {
+                        throw new BadCodeException("Error: cannot assign to this variable");
+                    }
+                    var.checkVariable(value.trim(), mainScope);
+                }
             }
             scopeMatcher = ScopePattern.matcher(line.trim());
             if (scopeMatcher.matches()) {
@@ -216,18 +236,23 @@ public class FileParser {
     private void createNewVariable(Scope currentScope, String[] variableList) throws IllegalCodeException {
         String type = genericMatcher.group(2);
         Boolean variableFinal =  genericMatcher.group(1) != null;
-        String variableName = genericMatcher.group(3);
-        String variableValue = genericMatcher.group(5);
+        String variableName = genericMatcher.group(3).trim();
+        String variableValue = genericMatcher.group(6);
         Boolean variableInitiated = variableList[0].contains(EQUAL);
         VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, currentScope,
                 variableInitiated);
         for (int index = 1; index < variableList.length; index++) {
             variableMatcher = VariableSecconderyPattern.matcher(variableList[index].trim());
-            variableName = variableMatcher.group(3);
-            variableValue = variableMatcher.group(5);
-            variableInitiated = variableList[index].contains(EQUAL);
-            VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, currentScope,
-                    variableInitiated);
+            if(variableMatcher.matches()) {
+                variableName = variableMatcher.group(1).trim();
+                variableValue = variableMatcher.group(3);
+                variableInitiated = variableList[index].contains(EQUAL);
+                VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, currentScope,
+                        variableInitiated);
+            }
+            else{
+                throw new BadVariableException();
+            }
         }
     }
 
@@ -307,7 +332,6 @@ public class FileParser {
                         var.checkVariable(value.trim(), currentScope);
                     }
                 }
-//                line =  fileLines.pop();
             }
             genericMatcher = ifWhilePattern.matcher(line.trim());
             if(genericMatcher.matches()){
