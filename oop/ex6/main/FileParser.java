@@ -167,6 +167,7 @@ public class FileParser {
         String args = scopeMatcher.group(2);
         if(args != null) {
             String[] parametersList = scopeMatcher.group(2).split(",");
+            scope.setNumberOfArgsInSignature(parametersList.length);
             for (String typeValueString : parametersList) {
                 Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString.trim());
                 if (typeParamMatcher.matches()) {
