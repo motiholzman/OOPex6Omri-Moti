@@ -24,8 +24,8 @@ public class FileParser {
 
     private final String MATCH_NAME = "([a-zA-Z]|_)+\\w*";
 
-    private final String MATCH_VARIABLE = "(final?)\\s*(int|double|char|String|boolean)\\s*(\\w)\\s*(=\\s*" +
-            "([^>]*))?;";
+    private final String MATCH_VARIABLE = "(final\\s+)?(int|double|char|String|boolean)\\s+([^>]*?)\\s*" +
+            "(=\\s*([^>]*))?;";
 
     private final String MATCH_VARIABLE_SECCONDRY = "(\\w*)\\s*(=\\s*([^>]*))?";
 
@@ -35,13 +35,13 @@ public class FileParser {
 
     private final Pattern VariableSecconderyPattern = Pattern.compile(MATCH_VARIABLE_SECCONDRY);
 
-    private final String MATCH_TYPE_PARAMETER2 = "(final)?\\s*(int|double|char|String|boolean)" +
-            "\\s*(\\w+)\\s*";
+    private final String MATCH_TYPE_PARAMETER2 =
+            "(final\\s+)?(int|double|char|String|boolean)\\s+("+MATCH_NAME+")";
 
     private final Pattern typeParameterPattern = Pattern.compile(MATCH_TYPE_PARAMETER2);
 
-    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\((" +
-            MATCH_TYPE_PARAMETER2 +")?(\\s*,"+MATCH_TYPE_PARAMETER2+")*\\)\\s*\\{";
+    private final String MATCH_SCOPE = "void\\s+(\\b[a-zA-Z][_a-zA-Z0-9]*\\b)\\s*\\(\\s*((\\s*" +
+            MATCH_TYPE_PARAMETER2 +")?(\\s*,\\s*"+MATCH_TYPE_PARAMETER2+"\\s*)*)\\)\\s*\\{";
 
     private final Pattern ScopePattern = Pattern.compile(MATCH_SCOPE);
 
@@ -60,11 +60,12 @@ public class FileParser {
     private final Pattern emptyLinePattern = Pattern.compile(MATCH_EMPTY_LINE);
 
     private final String MATCH_FUNC_CALL =
-            "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\(((\\s*[^>]*)?(\\s*,\\s*([^>]*)*)\\))\\s*;";
+            "([a-zA-Z][_a-zA-Z0-9]*)\\s*\\(((\\s*[^>]*?)?(\\s*,\\s*([^>]*?)*)*)\\)\\s*;";
 
     private final Pattern funcCallPattern = Pattern.compile(MATCH_FUNC_CALL);
 
-    private final String MATCH_IF_WHILE_CALL = "(if|while)\\s*\\((\\w*(\\s*(&&|\\|\\|)\\s*\\w*)*)\\)\\s*\\{";
+    private final String MATCH_IF_WHILE_CALL = "(if|while)\\s*\\(((\\s*[^>]+\\s*)+(\\s*(&&|\\|\\|)" +
+            "\\s*[^>]+\\s*)*)\\)\\s*\\{";
 
     private final Pattern ifWhilePattern = Pattern.compile(MATCH_IF_WHILE_CALL);
 
@@ -86,10 +87,11 @@ public class FileParser {
     /* the matcher object for comparing regex */
     private Matcher genericMatcher;
 
-    //will save the lines from the file into array
+    /* will save the lines from the file into array */
     private LinkedList<String> fileLines;
 
-
+    /*represents the empty string */
+    private static final String EMPTY_STRING = "";
     /**
      * this constructor initialize the objects
      *
@@ -117,13 +119,13 @@ public class FileParser {
     }
 
 
-    /**
+    /*
      * this method pre process the file in order to get its methods and global variables
      * @return Scope the main scope
      * @throws IllegalCodeException - if there is a problem with the variables or the methods
      * @throws IOException - if there is a problem with the buffer reader of the file
      */
-    public Scope preProcessFile() throws IllegalCodeException, IOException {
+    private Scope preProcessFile() throws IllegalCodeException, IOException {
         Stack<String> bracket = new Stack<>();
         String line = inputBuffer.readLine();
         fileLines.add(line);
@@ -132,11 +134,11 @@ public class FileParser {
         while (line != null) {
             // finding global variables
             variableList = line.split(",");
-            variableMatcher = VariablePattern.matcher(variableList[0].trim());
-            if (variableMatcher.matches()) {
+            genericMatcher = VariablePattern.matcher(variableList[0].trim());
+            if (genericMatcher.matches()) {
                 createGlobalVariable(mainScope, variableList);
             }
-            scopeMatcher = ScopePattern.matcher(line);
+            scopeMatcher = ScopePattern.matcher(line.trim());
             if (scopeMatcher.matches()) {
                 line = handleNewScope(bracket, mainScope);
             }
@@ -166,13 +168,16 @@ public class FileParser {
         if(args != null) {
             String[] parametersList = scopeMatcher.group(2).split(",");
             for (String typeValueString : parametersList) {
-                Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString);
+                Matcher typeParamMatcher = typeParameterPattern.matcher(typeValueString.trim());
                 if (typeParamMatcher.matches()) {
-                    Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
+                    Boolean variableFinal = typeParamMatcher.group(1) != null;
                     String type = typeParamMatcher.group(2);
                     String variableName = typeParamMatcher.group(3);
-                    VariablesFactory.createVariable(type, variableFinal, variableName, null, scope,
-                            null);
+                    VariablesFactory.createVariable(type, variableFinal, variableName, null,
+                            scope, false);
+                }
+                else if ( typeValueString.equals(FileParser.EMPTY_STRING)&& parametersList.length > 1){
+                    throw new BadCodeException("Error: Illegal name of argument.");
                 }
             }
         }
@@ -207,10 +212,10 @@ public class FileParser {
      * @throws IllegalCodeException - if a variable assignment isnt legal
      */
     private void createGlobalVariable(Scope mainScope, String[] variableList) throws IllegalCodeException {
-        String type = variableMatcher.group(2);
-        Boolean variableFinal = variableMatcher.group(1).equals(FINAL);
-        String variableName = variableMatcher.group(3);
-        String variableValue = variableMatcher.group(5);
+        String type = genericMatcher.group(2);
+        Boolean variableFinal =  genericMatcher.group(1) != null;
+        String variableName = genericMatcher.group(3);
+        String variableValue = genericMatcher.group(5);
         Boolean variableInitiated = variableList[0].contains(EQUAL);
         VariablesFactory.createVariable(type, variableFinal, variableName, variableValue, mainScope,
                 variableInitiated);
@@ -267,8 +272,13 @@ public class FileParser {
             genericMatcher = ScopePattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 matchFlag = true;
-                String scopeName = scopeMatcher.group(1);
+                String scopeName = genericMatcher.group(1);
                 currentScope = bringScope(scopeName);
+            }
+            genericMatcher = closeParenthesesPattern.matcher(line.trim());
+            if (genericMatcher.matches()) {
+                matchFlag = true;
+                currentScope = currentScope.getOuterScope();
             }
             genericMatcher = assignPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
@@ -288,6 +298,7 @@ public class FileParser {
             }
             genericMatcher = ifWhilePattern.matcher(line.trim());
             if(genericMatcher.matches()){
+                checkForUnsupportedMainOperation(currentScope);
                 matchFlag = true;
                 String scopeType = genericMatcher.group(1);
                 String [] parameters = genericMatcher.group(2).split("&&|\\|\\|");
@@ -311,17 +322,12 @@ public class FileParser {
                     currentScope = currentScope.getOuterScope();
                 }
             }
-            genericMatcher = closeParenthesesPattern.matcher(line.trim());
-            if (genericMatcher.matches()) {
-                matchFlag = true;
-                currentScope = currentScope.getOuterScope();
-            }
             genericMatcher = funcCallPattern.matcher(line.trim());
             if (genericMatcher.matches()) {
                 matchFlag = true;
                 checkForUnsupportedMainOperation(currentScope);
-                Scope functionScope = bringScope(scopeMatcher.group(1));
-                String [] parametersList = scopeMatcher.group(2).split(",");
+                Scope functionScope = bringScope(genericMatcher.group(1));
+                String [] parametersList = genericMatcher.group(2).split(",");
                 functionScope.checkSignature(parametersList);
             }
             if(!matchFlag) {
@@ -331,6 +337,8 @@ public class FileParser {
 
         }
     }
+
+
     /**
      * this method checks if some operations occurred in the main Scope. in that case, throws an exception.
      * @param currentScope: the current scope of the program.

@@ -17,6 +17,9 @@ public abstract class Variable {
     /* the Variable's name*/
     private String name;
 
+    /* the Variable's value*/
+    private String value;
+
     /* indicates whether the variable is initialize.*/
     private Boolean isInitialize;
 
@@ -47,6 +50,7 @@ public abstract class Variable {
             checkName(name);
             if(isInitialize) {
                 checkVariable(value);
+                this.value = value;
             }
         }
         catch (BadVariableException e) {
@@ -84,7 +88,8 @@ public abstract class Variable {
         if (otherVariable == null) {
             return false;
         }
-        if ((otherVariable.isInitialize) && otherVariable.type.equals(type)) {
+        if ((otherVariable.isInitialize)) {
+            checkVariable(otherVariable.value);
             return true;
         }
         throw new BadVariableException();
